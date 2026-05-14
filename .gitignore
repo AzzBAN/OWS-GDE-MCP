@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+.eggs/
+build/
+dist/
+
+# uv
+.uv/
+uv.lock.bak
+
+# Env / secrets — NEVER commit
+.env
+.env.*
+!.env.example
+.secrets
+*.pem
+*.key
+
+# Playwright / discovery
+.playwright-profile/
+playwright-report/
+test-results/
+trace.zip
+
+# Discovery dumps may contain sensitive request/response payloads.
+# Commit only sanitized examples placed under docs/discovery/examples/.
+docs/discovery/raw/
+docs/discovery/*.har
+docs/discovery/**/*.json
+!docs/discovery/examples/**
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Test artifacts
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
