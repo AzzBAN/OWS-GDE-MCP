@@ -41,6 +41,8 @@ mcp.tool()(_live.list_project_modules)
 mcp.tool()(_live.get_studio_module)
 mcp.tool()(_live.list_models)
 mcp.tool()(_live.get_model)
+mcp.tool()(_live.list_services)
+mcp.tool()(_live.get_service)
 
 
 @mcp.tool()

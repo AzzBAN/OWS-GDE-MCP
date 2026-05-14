@@ -422,16 +422,113 @@ async def get_model(tenant: str, model_id: int) -> dict[str, Any]:
     )
 
 
+# ============================================================
+# Studio (design-state) — Services
+# ============================================================
+
+
+async def list_services(
+    tenant: str,
+    project_name: str,
+    module_name: str,
+    *,
+    service_name: str = "",
+    start: int = 0,
+    limit: int = 50,
+) -> dict[str, Any]:
+    """List Services declared in a Studio project module.
+
+    Calls `POST /adc-studio-service/web/rest/v1/app/service/query`.
+
+    Service responses include the full `flow` definition (steps, transitions,
+    input/output schema, etc.) — same shape as the `SERVICE/<name>.json`
+    files inside a `.gpk` export.
+
+    Returns:
+        `{"total", "services": [{id, service_name, service_uri, ui_api,
+        open_level, active, async, enable_operation_log, permission, flow,
+        created_by, updated_by, created_time, updated_time, ...}]}`
+    """
+    res = await _post(
+        tenant,
+        "/adc-studio-service/web/rest/v1/app/service/query",
+        json={
+            "project_name": project_name,
+            "module_name": module_name,
+            "service_name": service_name,
+            "start": start,
+            "limit": limit,
+        },
+    )
+    instances = (res or {}).get("instances") or []
+    summary = [
+        {
+            "id": s.get("id"),
+            "service_name": s.get("service_name"),
+            "service_uri": s.get("service_uri"),
+            "ui_api": s.get("ui_api"),
+            "open_level": s.get("open_level"),
+            "active": s.get("active"),
+            "async": s.get("async"),
+            "enable_operation_log": s.get("enable_operation_log"),
+            "project_name": s.get("project_name"),
+            "module_name": s.get("module_name"),
+            "created_by": s.get("created_by"),
+            "updated_by": s.get("updated_by"),
+            "created_time": s.get("created_time"),
+            "updated_time": s.get("updated_time"),
+        }
+        for s in instances
+    ]
+    return {
+        "total": (res or {}).get("total", len(instances)),
+        "services": summary,
+        "_raw_count": len(instances),
+    }
+
+
+async def get_service(
+    tenant: str,
+    project_name: str,
+    module_name: str,
+    service_name: str,
+) -> dict[str, Any]:
+    """Fetch one Service's full definition (including its `flow` steps).
+
+    Implemented as a tightly-filtered `list_services` since the studio API
+    surfaces full definitions in the list call. If the exact match returns
+    nothing, callers should re-issue `list_services` with a substring.
+    """
+    res = await _post(
+        tenant,
+        "/adc-studio-service/web/rest/v1/app/service/query",
+        json={
+            "project_name": project_name,
+            "module_name": module_name,
+            "service_name": service_name,
+            "start": 0,
+            "limit": 1,
+        },
+    )
+    instances = (res or {}).get("instances") or []
+    for s in instances:
+        if s.get("service_name") == service_name:
+            return s
+    return {"error": f"Service {service_name!r} not found in {project_name}/{module_name}"}
+
+
 __all__ = [
     "call_ows_api",
     "get_favorite_menus",
     "get_model",
     "get_model_fields",
+    "get_service",
     "get_studio_module",
     "get_studio_project",
     "list_live_apps",
     "list_live_menus",
     "list_models",
     "list_project_modules",
+    "list_services",
     "list_studio_projects",
 ]
