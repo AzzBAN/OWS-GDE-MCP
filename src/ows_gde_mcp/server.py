@@ -15,8 +15,17 @@ from mcp.server.fastmcp import FastMCP
 from ows_gde_mcp import __version__
 from ows_gde_mcp.client import OwsApiError, OwsClient
 from ows_gde_mcp.config import Tenant, settings
+from ows_gde_mcp.tools import packages as _pkgs
 
 mcp = FastMCP("ows-gde-mcp")
+
+
+# Register offline `.gpk` introspection tools. These do not require auth.
+mcp.tool()(_pkgs.list_app_packages)
+mcp.tool()(_pkgs.get_app_package_info)
+mcp.tool()(_pkgs.list_app_artifacts)
+mcp.tool()(_pkgs.get_app_artifact)
+mcp.tool()(_pkgs.search_app_artifacts)
 
 
 @mcp.tool()

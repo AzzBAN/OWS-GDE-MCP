@@ -34,6 +34,15 @@ docs/discovery/*.har
 docs/discovery/**/*.json
 !docs/discovery/examples/**
 
+# Real OWS app exports — contain proprietary business logic, possibly
+# customer data. NEVER commit. Keep locally for the MCP to parse.
+docs/discovery/**/sample-apps/
+*.gpk
+*.gpk.zip
+
+# Playwright MCP per-session artifacts (snapshots, console logs).
+.playwright-mcp/
+
 # IDE
 .idea/
 .vscode/

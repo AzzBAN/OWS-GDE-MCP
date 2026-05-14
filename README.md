@@ -8,8 +8,26 @@ Processes, Jobs, Triggers, Events, RPA Scripts, AI Models, Agents, and ~40
 more artifact types — so an agent can answer "what is X in our OWS?" without
 you copy-pasting from the portal.
 
-> **Status:** Phase 0 (discovery). Auth scheme reverse-engineered and
-> verified; `whoami` end-to-end works. Artifact tools land in Phase 1+.
+> **Status:** Phase 0 → 1. Auth scheme reverse-engineered and verified;
+> `whoami` end-to-end works against the live OWS host (once you paste a
+> session cookie). Offline `.gpk` package introspection ships in Phase 1
+> with 5 tools — no auth needed.
+
+## Tools shipped so far
+
+**Live OWS** (require `OWS_*_SESSION_COOKIE`):
+- `status()` — server diagnostics, no network
+- `whoami(tenant)` — round-trips against `/portal/web/rest/v1/user/my-info`
+
+**Offline app-package introspection** (no auth, just put `.gpk` files under
+`docs/discovery/<tenant>/sample-apps/`):
+- `list_app_packages()` — list all locally available `.gpk` exports
+- `get_app_package_info(name_or_path)` — manifest, modules, per-type counts,
+  dev environment / creator
+- `list_app_artifacts(name_or_path, type?, module?, name_contains?, limit?)`
+- `get_app_artifact(name_or_path, type, name, module?)` — full parsed JSON
+- `search_app_artifacts(query, type?, limit?)` — find an artifact across
+  every package on disk
 
 ## What this wraps
 

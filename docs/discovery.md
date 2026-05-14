@@ -244,13 +244,81 @@ The MCP's job is to make every one of these queryable.
 
 ---
 
+## App package (`.gpk`) format — canonical layout
+
+`.gpk` files are **plain zip archives** of an OWS app's Design State assets.
+Verified against 7 real exports (see `docs/discovery/testbed/sample-apps/`,
+gitignored).
+
+```
+manifest.json                 # app-level metadata (name, version, scene, …)
+category.json                 # business categorisation
+patch.json                    # { source_version, target_version }
+resources/
+    birth_permit.json         # issuing tenant + dev environment + creator
+    logo.svg
+modules/
+    <project>/                # e.g. "TTS", "c_TroubleTicket"
+        module.json           # project-level: name, prefix, supported_item_types[]
+        studio.json           # project-level: Studio menu items (artifact types in nav)
+        <module>/             # e.g. "general_work"
+            brief.json
+            package.json
+            <TYPE>/           # one dir per artifact type (uppercase)
+                <name>.json   # canonical artifact (file-based types)
+                ...
+```
+
+### Per-type storage convention
+| Type group              | Storage shape inside `<TYPE>/`                                                                 |
+|-------------------------|------------------------------------------------------------------------------------------------|
+| File-based (most types) | one `<name>.json` per artifact (MODEL, PAGE, SERVICE, TRIGGER, MENU, JOB, EVENT, …)            |
+| Service / Page extras   | sibling subdirs `RunScript/`, `ScriptLib/`, `Translator/`, `Validator/`, `script/`, `config/`  |
+| Directory-based         | `WORKFLOW/<name>/` containing `_bpmn.json`, `_process_definition.json`, `_process_forms.json`, `_process_flow_condition.json`, `_process_assignees.json` |
+| Bundle types            | `PERMISSION/{permissions,roles,role_permission_assignments}.json`; `I18N/bundle.json` + per-locale subdirs |
+| Housekeeping (skip)     | `*/patch.diff.brief.json`, `<module>/brief.json`, `<module>/package.json`                      |
+
+### Artifact JSON schemas (key fields seen in samples)
+
+- **MODEL** → `model_name, model_type, display_name, active, properties[]`
+  with each property `{property_name, display_name, property_type,
+  default_value, primary_key, required, restrictions, sort}`.
+- **SERVICE** → `service_name, ui_api, open_level, async, legacy, permission,
+  flow{start_at, steps{...}}` — flow steps are `input|invoke|transform|...`
+  blocks linked by `next`.
+- **PAGE** → `name, content{id, name, children[]}` — recursive UI tree of
+  components (`name`, `props`, `events`, `children`, `propsBind`).
+- **TRIGGER** → `trigger_name, model_uri, event_type, before_or_after,
+  condition, source, trigger_activities[]` — activities reference services
+  via `service_rest_uri: /adc-service/rest/v1/services/<App>/<module>/<svc>`.
+- **MENU** → `name, parent, menuType, url, text, module, openLevel`.
+- **PERMISSION** → top-level `permissions[]`, plus separate `roles.json` and
+  `role_permission_assignments.json` files.
+- **WORKFLOW** → BPMN-style XML embedded in `*_bpmn.json`; activities, forms,
+  assignees in sibling files.
+
+### Asset URI convention
+The canonical OWS asset URI used in cross-references is:
+
+    /<project>/<module>/<artifact_name>
+
+e.g. `/TTS/general_work/tts_data` (a Model), or
+`/SDMToThirdPartySystem/SDMToThirdPartySystem/thirdps_integration_tickets`
+(a Model referenced from another app's service flow input).
+
+This URI also appears as `asset_uri=` on the live API
+(`POST /adc-model/web/rest/v1/app/tql/init?asset_uri=...`).
+
+---
+
 ## Open items for next sub-phases
 
 - [ ] Get a session cookie into `.env` (user-side step, see README/Setup).
 - [ ] Walk every Studio module ("Display by Group" picker) and dump network
       requests per artifact type to `docs/discovery/testbed/<module>.json`.
-- [ ] Parse a real exported app (`docs/discovery/testbed/sample-apps/<name>.zip`)
-      to extract the canonical serialized schema for each artifact type.
+      Especially: AI Studio / Agent / MCP / RPA (not represented in samples).
+- [ ] Wrap the online help (`/adc-studio-project-mgt/web/rest/help/doc/...`)
+      so the MCP can answer "what is this artifact?" with citations.
 - [ ] Confirm whether Production has a separate `*-studio` subdomain or runs
       Studio at the same host.
 - [ ] Determine CAS login flow if we want headless (programmatic) login —
