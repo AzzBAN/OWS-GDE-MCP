@@ -13,21 +13,28 @@ you copy-pasting from the portal.
 > session cookie). Offline `.gpk` package introspection ships in Phase 1
 > with 5 tools — no auth needed.
 
-## Tools shipped so far
+## Tools
 
-**Live OWS** (require `OWS_*_SESSION_COOKIE`):
-- `status()` — server diagnostics, no network
-- `whoami(tenant)` — round-trips against `/portal/web/rest/v1/user/my-info`
+**📄 Full reference: [`docs/tools.md`](docs/tools.md)** — auto-generated from
+the live MCP server, lists every tool with its signature and description.
 
-**Offline app-package introspection** (no auth, just put `.gpk` files under
-`docs/discovery/<tenant>/sample-apps/`):
-- `list_app_packages()` — list all locally available `.gpk` exports
-- `get_app_package_info(name_or_path)` — manifest, modules, per-type counts,
-  dev environment / creator
-- `list_app_artifacts(name_or_path, type?, module?, name_contains?, limit?)`
-- `get_app_artifact(name_or_path, type, name, module?)` — full parsed JSON
-- `search_app_artifacts(query, type?, limit?)` — find an artifact across
-  every package on disk
+Regenerate after adding/changing a tool:
+
+```bash
+uv run python scripts/gen_tools_md.py
+```
+
+Quick map of what's in each category (currently 20 tools):
+
+- **Diagnostics:** `status`, `whoami`
+- **Live OWS — Studio introspection (auth required):** `list_studio_projects`,
+  `get_studio_project`, `list_project_modules`, `get_studio_module`,
+  `list_models`, `get_model`, `get_model_fields`, `list_services`,
+  `get_service`, `list_live_menus`, `list_live_apps`, `get_favorite_menus`,
+  `call_ows_api` (generic escape hatch).
+- **Offline `.gpk` introspection (no auth):** `list_app_packages`,
+  `get_app_package_info`, `list_app_artifacts`, `get_app_artifact`,
+  `search_app_artifacts`.
 
 ## What this wraps
 
