@@ -15,6 +15,7 @@ from mcp.server.fastmcp import FastMCP
 from ows_gde_mcp import __version__
 from ows_gde_mcp.client import OwsApiError, OwsClient
 from ows_gde_mcp.config import Tenant, settings
+from ows_gde_mcp.tools import live as _live
 from ows_gde_mcp.tools import packages as _pkgs
 
 mcp = FastMCP("ows-gde-mcp")
@@ -26,6 +27,13 @@ mcp.tool()(_pkgs.get_app_package_info)
 mcp.tool()(_pkgs.list_app_artifacts)
 mcp.tool()(_pkgs.get_app_artifact)
 mcp.tool()(_pkgs.search_app_artifacts)
+
+# Register live OWS introspection tools. Require OWS_<TENANT>_SESSION_COOKIE.
+mcp.tool()(_live.list_live_menus)
+mcp.tool()(_live.list_live_apps)
+mcp.tool()(_live.get_favorite_menus)
+mcp.tool()(_live.get_model_fields)
+mcp.tool()(_live.call_ows_api)
 
 
 @mcp.tool()
