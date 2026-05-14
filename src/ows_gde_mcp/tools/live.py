@@ -236,10 +236,202 @@ async def call_ows_api(
             }
 
 
+# ============================================================
+# Studio (design-state) — Projects, Modules, Models
+# ============================================================
+
+
+async def list_studio_projects(
+    tenant: str,
+    *,
+    start: int = 0,
+    limit: int = 50,
+) -> dict[str, Any]:
+    """List recently-viewed Studio projects with full metadata.
+
+    Calls `GET /adc-studio-project-mgt/web/rest/v1/recent-projects`.
+
+    Returns:
+        `{"total", "projects": [{id, name, display_name, scene, creator,
+        create_time, updater, update_time, description, ...}]}`
+    """
+    res = await _get(
+        tenant,
+        "/adc-studio-project-mgt/web/rest/v1/recent-projects",
+        params={"start": start, "limit": limit},
+    )
+    data = (res or {}).get("data") or {}
+    projects = []
+    for row in data.get("data") or []:
+        proj = row.get("project") or row
+        projects.append(
+            {
+                "id": proj.get("id"),
+                "name": proj.get("name"),
+                "display_name": proj.get("display_name"),
+                "scene": proj.get("scene"),
+                "creator": proj.get("creator"),
+                "create_time": proj.get("create_time"),
+                "updater": proj.get("updater"),
+                "update_time": proj.get("update_time"),
+                "description": proj.get("description"),
+                "customized": proj.get("customized"),
+                "is_legacy_project": proj.get("is_legacy_project"),
+                "uuid": proj.get("uuid"),
+                "last_visited": row.get("last_time"),
+            }
+        )
+    return {"total": data.get("total", len(projects)), "projects": projects}
+
+
+async def get_studio_project(tenant: str, project: str | int) -> dict[str, Any]:
+    """Get one Studio project by id or by name.
+
+    Args:
+        project: numeric project id (int/str of digits) OR project name.
+    """
+    p = str(project)
+    path = (
+        f"/adc-studio-project-mgt/web/rest/v1/projects/{p}"
+        if p.isdigit()
+        else f"/adc-studio-project-mgt/web/rest/v1/projects/name/{p}"
+    )
+    res = await _get(tenant, path)
+    return (res or {}).get("data") or res
+
+
+async def list_project_modules(tenant: str, project_id: int) -> list[dict[str, Any]]:
+    """List modules inside a Studio project.
+
+    Calls `GET /adc-studio-project-mgt/web/rest/v1/project/{project_id}/modules`.
+    """
+    res = await _get(
+        tenant,
+        f"/adc-studio-project-mgt/web/rest/v1/project/{project_id}/modules",
+    )
+    rows = (res or {}).get("data") or []
+    return [
+        {
+            "id": m.get("id"),
+            "name": m.get("name"),
+            "prefix": m.get("prefix"),
+            "project_id": m.get("project_id"),
+            "creator": m.get("creator"),
+            "create_time": m.get("create_time"),
+            "updater": m.get("updater"),
+            "update_time": m.get("update_time"),
+            "description": m.get("description"),
+            "is_customizable": m.get("is_customizable"),
+            "customized": m.get("customized"),
+            "basic_module": m.get("basic_module"),
+            "legacy": m.get("legacy"),
+        }
+        for m in rows
+    ]
+
+
+async def get_studio_module(tenant: str, module_id: int) -> dict[str, Any]:
+    """Get module detail including which artifact types it supports.
+
+    Calls `GET /adc-studio-project-mgt/web/rest/v1/modules/{module_id}`.
+
+    Returns the module's `items` list — the artifact-type categories enabled
+    on that module (MODEL, PAGE, SERVICE, WORKFLOW, etc.).
+    """
+    res = await _get(
+        tenant,
+        f"/adc-studio-project-mgt/web/rest/v1/modules/{module_id}",
+    )
+    data = (res or {}).get("data") or res or {}
+    items = data.get("items") or []
+    return {
+        "id": data.get("id"),
+        "name": data.get("name"),
+        "prefix": data.get("prefix"),
+        "project_id": data.get("project_id"),
+        "description": data.get("description"),
+        "supported_item_types": [
+            {
+                "id": it.get("id"),
+                "item_type": it.get("item_type"),
+                "label": it.get("label"),
+                "engine_id": it.get("engine_id"),
+            }
+            for it in items
+        ],
+    }
+
+
+async def list_models(
+    tenant: str,
+    project_name: str,
+    module_name: str,
+    *,
+    model_name: str = "",
+    model_type: str = "",
+    active: str = "",
+    start: int = 0,
+    limit: int = 50,
+) -> dict[str, Any]:
+    """List Data Models declared in a Studio project module.
+
+    Calls `POST /adc-studio-model/web/rest/v1/models/query-model-no-prop`.
+
+    Args:
+        model_name: optional substring filter on the model name.
+        model_type: optional filter (e.g. "datamodel", "proxymodel",
+                    "elasticmodel").
+        active: "true" / "false" / "" (any).
+
+    Returns:
+        `{"total", "models": [{model_id, model_name, display_name,
+        model_type, project_name, module_name, active, open_level,
+        created_by, updated_by, created_time, updated_time,
+        description?, customized}]}`
+    """
+    res = await _post(
+        tenant,
+        "/adc-studio-model/web/rest/v1/models/query-model-no-prop",
+        json={
+            "project_name": project_name,
+            "module_name": module_name,
+            "model_name": model_name,
+            "model_type": model_type,
+            "active": active,
+            "start": start,
+            "limit": limit,
+        },
+    )
+    return {
+        "total": (res or {}).get("total", 0),
+        "models": (res or {}).get("data", []),
+    }
+
+
+async def get_model(tenant: str, model_id: int) -> dict[str, Any]:
+    """Fetch a Data Model's full schema by id (every property + restrictions).
+
+    Calls `POST /adc-studio-model/web/rest/v1/models/query-by-id?model_id=<id>`.
+
+    Use `list_models()` first to find the `model_id`.
+    """
+    return await _post(
+        tenant,
+        "/adc-studio-model/web/rest/v1/models/query-by-id",
+        params={"model_id": model_id},
+    )
+
+
 __all__ = [
     "call_ows_api",
     "get_favorite_menus",
+    "get_model",
     "get_model_fields",
+    "get_studio_module",
+    "get_studio_project",
     "list_live_apps",
     "list_live_menus",
+    "list_models",
+    "list_project_modules",
+    "list_studio_projects",
 ]

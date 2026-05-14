@@ -172,11 +172,63 @@ All same-origin under `https://1057-sg-studio.teleows.com`:
 | Legacy service | POST | `/adc-service/web/rest/v1/legacy/services/<serviceName>` |
 
 ### Studio (design-state) — surfaced when `?isStudio=true`
+
+The studio surface lives under `/adc-studio-project-mgt/web/rest/v1/` for
+project/module management and `/adc-studio-<TYPE>/web/rest/v1/` for each
+artifact type's editor service.
+
+#### Project / module management (`/adc-studio-project-mgt/web/rest/v1/`)
 | Op | Method | Path |
 |---|---|---|
-| Online help index | GET | `/adc-studio-project-mgt/web/rest/help/doc/en_US/index.html` |
-| Online help nav tree | GET | `/adc-studio-project-mgt/web/rest/help/doc/en_US/data/nav_json.js` |
-| _More TBD when studio walk + sample app export are processed_ | | |
+| Recent projects | GET | `/recent-projects?start=&limit=` |
+| Shared projects | POST | `/shared-projects` body `{start,limit}` |
+| Favorite project templates | GET | `/favorite-project-template?start=&limit=` |
+| Studio menus list | GET | `/common/studio-menus-list` |
+| Project by id | GET | `/projects/{project_id}` |
+| Project by name | GET | `/projects/name/{name}` |
+| Modules in project | GET | `/project/{project_id}/modules` |
+| Module detail | GET | `/modules/{module_id}` (contains `items[]` = supported artifact types) |
+| Element-type catalog | GET | `/modules/element-type` |
+| Recent elements | GET | `/project/element/recent/{project_name}` |
+| Last visited module | GET | `/modules/last-visit/{project_id}/` |
+| Problem scan | POST | `/problem_scan/get/{project_id}` |
+| Online help index | GET | `/help/doc/en_US/index.html` |
+| Online help nav tree | GET | `/help/doc/en_US/data/nav_json.js` |
+| AQM task | POST | `/aqm/task/execute` |
+| Disabled studio editor menus | GET | `/projects/studio-editor-menus/disabled/{project_id}` |
+
+Studio menus endpoint (different from runtime menus):
+`GET /portal/web/rest/v1/menu/manage/app/getGranted/studio?granted=true`
+
+#### Model layer (`/adc-studio-model/web/rest/v1/`)
+| Op | Method | Path |
+|---|---|---|
+| List models in a module (no props) | POST | `/models/query-model-no-prop` body `{project_name, module_name, model_name?, model_type?, active?, start, limit}` |
+| Get model with props by id | POST | `/models/query-by-id?model_id={id}` |
+| Asset-dependency check | GET | `/meta-reference/asset-dependency/exist` |
+
+Model property shape (verified on `tts_data` proxymodel — 92 properties):
+
+```json
+{
+  "property_id": 355217, "property_name": "order_id",
+  "display_name": "Order ID", "property_type": "text",
+  "primary_key": true, "required": true, "description": "Order ID",
+  "model_id": 15900,
+  "restrictions": [{"item": "Max Length", "value": "100"}],
+  "customized": false, "self_customized": false, "sort": 0
+}
+```
+
+Model types seen: `datamodel`, `proxymodel`, `elasticmodel`. `proxymodel`
+includes `ext_properties.proxy_type_name` (e.g. `"BPM"`).
+
+#### Mobile / other artifact-type editors (TBD)
+- `/adc-studio-mobile/web/rest/v1/page-core/page/...`
+- `/adc-studio-service/...`, `/adc-studio-page/...`, `/adc-studio-workflow/...`,
+  `/adc-studio-trigger/...`, etc — endpoint shapes not yet captured (each
+  artifact type has a distinct backend service; will be discovered by clicking
+  each tab in the Resource Designer and capturing network calls).
 
 ### Async / agent
 | Op | Method | Path |

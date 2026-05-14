@@ -34,6 +34,13 @@ mcp.tool()(_live.list_live_apps)
 mcp.tool()(_live.get_favorite_menus)
 mcp.tool()(_live.get_model_fields)
 mcp.tool()(_live.call_ows_api)
+# Studio (design-state) — projects, modules, models
+mcp.tool()(_live.list_studio_projects)
+mcp.tool()(_live.get_studio_project)
+mcp.tool()(_live.list_project_modules)
+mcp.tool()(_live.get_studio_module)
+mcp.tool()(_live.list_models)
+mcp.tool()(_live.get_model)
 
 
 @mcp.tool()
