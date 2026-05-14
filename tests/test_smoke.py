@@ -26,3 +26,6 @@ def test_status_tool_smoke() -> None:
     assert out["phase"].startswith("0")
     assert "testbed" in out["tenants"]
     assert "prod" in out["tenants"]
+    # Each tenant reports auth-readiness booleans.
+    assert "has_session_cookie" in out["tenants"]["testbed"]
+    assert "has_csrf_token" in out["tenants"]["testbed"]

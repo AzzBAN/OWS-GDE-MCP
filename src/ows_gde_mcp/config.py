@@ -30,10 +30,16 @@ class Settings(BaseSettings):
     OWS_TESTBED_RUNTIME_URL: HttpUrl | None = None
     OWS_PROD_RUNTIME_URL: HttpUrl | None = None
 
-    # Session cookies (post-discovery). Discovery phase walks the browser, so
-    # these are only needed once we promote captured endpoints into typed tools.
+    # Session cookies (raw `Cookie:` header value) captured from a logged-in
+    # browser. Required for the MCP to make authenticated requests.
+    # See README.md → "Capturing the session cookie".
     OWS_TESTBED_SESSION_COOKIE: str | None = None
     OWS_PROD_SESSION_COOKIE: str | None = None
+
+    # CSRF tokens — `window.csrfToken` / `localStorage.csrfTokens[].csrfToken`
+    # from a logged-in browser. Required for non-GET requests only.
+    OWS_TESTBED_CSRF_TOKEN: str | None = None
+    OWS_PROD_CSRF_TOKEN: str | None = None
 
     # Production safety gate.
     OWS_PROD_WRITE_ENABLED: bool = False

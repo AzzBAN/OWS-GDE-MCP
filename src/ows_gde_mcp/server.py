@@ -1,7 +1,8 @@
 """FastMCP server entrypoint.
 
-Phase 0: only a placeholder tool that reports discovery status. Real tools land
-once endpoints are captured under docs/discovery/.
+Phase 0: ships `status` (no auth) and `whoami` (real OWS call) so we can
+prove the auth pipeline end-to-end before adding artifact introspection
+tools (Phase 1+).
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ import sys
 from mcp.server.fastmcp import FastMCP
 
 from ows_gde_mcp import __version__
+from ows_gde_mcp.client import OwsApiError, OwsClient
 from ows_gde_mcp.config import Tenant, settings
 
 mcp = FastMCP("ows-gde-mcp")
@@ -19,7 +21,7 @@ mcp = FastMCP("ows-gde-mcp")
 
 @mcp.tool()
 def status() -> dict:
-    """Report MCP server status & which tenants have URLs configured."""
+    """Report MCP server status & which tenants have URLs/secrets configured."""
     return {
         "version": __version__,
         "phase": "0-discovery",
@@ -28,16 +30,60 @@ def status() -> dict:
                 "studio_url": str(settings.OWS_TESTBED_STUDIO_URL or ""),
                 "runtime_url": str(settings.OWS_TESTBED_RUNTIME_URL or ""),
                 "has_session_cookie": bool(settings.OWS_TESTBED_SESSION_COOKIE),
+                "has_csrf_token": bool(settings.OWS_TESTBED_CSRF_TOKEN),
             },
             Tenant.PROD.value: {
                 "studio_url": str(settings.OWS_PROD_STUDIO_URL or ""),
                 "runtime_url": str(settings.OWS_PROD_RUNTIME_URL or ""),
                 "has_session_cookie": bool(settings.OWS_PROD_SESSION_COOKIE),
+                "has_csrf_token": bool(settings.OWS_PROD_CSRF_TOKEN),
                 "write_enabled": settings.OWS_PROD_WRITE_ENABLED,
             },
         },
-        "note": "Phase 0 (discovery). Real tools ship once docs/discovery/ is populated.",
     }
+
+
+@mcp.tool()
+async def whoami(tenant: str) -> dict:
+    """Return the logged-in user profile for the given tenant.
+
+    Args:
+        tenant: "prod" or "testbed".
+
+    Returns:
+        Parsed `/portal/web/rest/v1/user/my-info` payload (userId, userName,
+        userAccount, tenantId, roles, time zone, etc.). Includes a small
+        `_session_alive` boolean confirming `/portal/web/rest/sso/check`.
+    """
+    t = Tenant(tenant)
+    async with OwsClient.for_tenant(t, settings) as client:
+        try:
+            me = await client.get("/portal/web/rest/v1/user/my-info")
+            alive = await client.get("/portal/web/rest/sso/check")
+        except OwsApiError as e:
+            return {
+                "error": {
+                    "status": e.status,
+                    "code": e.code,
+                    "message": e.message,
+                    "path": e.path,
+                },
+                "hint": (
+                    "If code is ADC.COMM.SDK.03240001, the session cookie is "
+                    "missing or expired. Re-capture it (see README → 'Capturing "
+                    f"the session cookie') and update OWS_{t.value.upper()}_SESSION_COOKIE."
+                ),
+            }
+        return {
+            "tenant": t.value,
+            "userId": me.get("userId"),
+            "userAccount": me.get("userAccount"),
+            "userName": me.get("userName"),
+            "tenantId": me.get("tenantId"),
+            "timeZone": me.get("timeZone"),
+            "roles": [r.get("roleName") for r in (me.get("role") or [])],
+            "_session_alive": bool(alive),
+        }
 
 
 def cli() -> None:
@@ -59,11 +105,10 @@ def cli() -> None:
 
     if args.cmd == "serve":
         if args.http:
-            # FastMCP exposes Streamable HTTP via run(transport="streamable-http")
             mcp.settings.port = args.port
             mcp.run(transport="streamable-http")
         else:
-            mcp.run()  # stdio
+            mcp.run()
     else:
         parser.print_help()
         sys.exit(2)

@@ -1,13 +1,16 @@
 # AGENTS.md — context for future agents working in this repo
 
 ## What this repo is
-Python FastMCP server wrapping Huawei OWS / GDE (Operation Web Services /
-General Digital Engine) for two tenants the user has access to:
+Python FastMCP server that exposes Huawei OWS / GDE (Operation Web Services /
+General Digital Engine) **as a programmable introspection surface** for AI
+agents and developer tooling. Scope is *every artifact a developer can build
+in OWS Development State Studio* — Models, Pages, Services, Scripts, Processes,
+Jobs, Triggers, Events, RPA, AI Models, Agents, etc. (~50 types).
 
-- **Testbed:** `https://1057-sg-studio.teleows.com/` (Studio / design state)
-- **Production:** `https://1057-sg.teleows.com/` (Runtime)
+Two tenants the user has access to (same account):
 
-Both belong to the same user account.
+- **Testbed:** `https://1057-sg-studio.teleows.com/` (Studio + Runtime co-hosted)
+- **Production:** `https://1057-sg.teleows.com/` (Runtime; Studio URL TBD)
 
 ## Hard rules
 1. **Never commit credentials.** `.env` is gitignored. The OWS password the user
@@ -32,14 +35,21 @@ Both belong to the same user account.
 - `pytest` + `pytest-httpx` for tests.
 - `ruff` for lint/format.
 
-## Phase order
-0. **Discovery & scaffolding** (current). Capture API surface via Playwright MCP.
-1. Process orchestration (Studio + Runtime).
-2. Asset management / GDE Store.
-3. Data models + Data orchestration.
-4. UI / Form metadata (read-only).
-5. Service orchestration / API Fabric.
-6. Runtime ops — work orders, alarms, SLA/OLA.
+## Phase order (revised — artifact-introspection focused)
+0. **Discovery & scaffolding** (current). Auth scheme reverse-engineered;
+   `whoami` works end-to-end. Pending: parse a sample app export + Studio walk.
+1. **Core introspection** — `list_apps`, `list_artifacts`, `get_artifact`,
+   `search_artifacts`, plus a generic `call_ows_api` escape hatch. Common
+   artifact types first (Model, Page, Service, Script, Business Process).
+2. **Data layer** — typed Model tools, TQL queries, Data Process, Data Source.
+3. **AI / Agent artifacts** — AI Model, AI Service, Agent, Flow, Prompt, Tool,
+   Knowledge Management, etc.
+4. **Integration artifacts** — Inbound/Outbound REST/SOAP, Connector, RPA
+   Script, Function Service, Trigger, Job.
+5. **Runtime ops** — Work orders, alarms, SLA/OLA (only if needed beyond
+   introspection).
+6. **Help docs ingestion** — wrap the Studio online help so the MCP can
+   answer "what does this artifact mean?" with citations.
 7. Polish — logging, tests, docs, packaging.
 
 ## How discovery works
