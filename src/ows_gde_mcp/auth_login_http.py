@@ -17,6 +17,7 @@ import base64
 import re
 from dataclasses import dataclass
 
+import httpx
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 
@@ -80,3 +81,75 @@ def parse_login_page(html: str) -> LoginPage:
         rsa_pub_pem=pub_m.group(1).replace("\\n", "\n"),
         rsa_pub_version=ver_m.group(1) if ver_m else "",
     )
+
+
+async def http_login(base_url: str, username: str, password: str) -> tuple[str, str | None]:
+    """Run a pure-HTTP CAS login against `base_url`. Return (cookie_header, csrf).
+
+    `csrf` may be None — GET studio reads don't need it, and the caller's
+    Playwright path can supply it later if a non-GET requires it.
+
+    Raises:
+        HttpLoginError: on any HTTP failure, parse failure, or failed
+            self-test. The caller falls back to Playwright. Never includes
+            the password in its message.
+    """
+    base = base_url.rstrip("/")
+    async with httpx.AsyncClient(base_url=base, follow_redirects=True, timeout=30.0) as c:
+        try:
+            page_resp = await c.get("/dspcas/login")
+            page_resp.raise_for_status()
+            page = parse_login_page(page_resp.text)
+            enc_pw = rsa_oaep_encrypt(password, page.rsa_pub_pem)
+            await c.post(
+                "/dspcas/login",
+                data={
+                    "username": username,
+                    "password": enc_pw,
+                    "execution": page.execution,
+                    "_eventId": "submit",
+                    "rsaPubVersion": page.rsa_pub_version,
+                },
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            )
+        except HttpLoginError:
+            raise
+        except Exception as e:
+            raise HttpLoginError(f"HTTP CAS login to {host_only(base)} failed: {e}") from e
+
+        # Self-test: confirm the session is real before exporting cookies.
+        try:
+            check = await c.get(
+                "/portal/web/rest/sso/check",
+                headers={"X-Requested-With": "XMLHttpRequest"},
+            )
+            alive = check.status_code == 200 and check.json() is True
+        except Exception:
+            alive = False
+        if not alive:
+            raise HttpLoginError(
+                f"HTTP CAS login to {host_only(base)} did not establish a live "
+                "session (sso/check not true) — likely captcha/MFA. Falling back."
+            )
+
+        cookie_header = "; ".join(f"{c_.name}={c_.value}" for c_ in c.cookies.jar)
+        csrf = await _fetch_csrf(c)
+    if not cookie_header:
+        raise HttpLoginError(f"HTTP CAS login to {host_only(base)} returned no cookies.")
+    return cookie_header, csrf
+
+
+def host_only(base_url: str) -> str:
+    """Host for log/error messages (no credentials ever included)."""
+    from ows_gde_mcp.hosts import host_of
+    return host_of(base_url)
+
+
+async def _fetch_csrf(client: httpx.AsyncClient) -> str | None:
+    """Best-effort CSRF fetch. Returns None if unavailable (GET reads don't need it).
+
+    OPEN QUESTION (spec section 7.1): confirm the REST endpoint the SPA uses to
+    mint `window.csrfToken`. Until verified, return None — non-GET prod-studio
+    calls will trigger the Playwright path which captures CSRF reliably.
+    """
+    return None

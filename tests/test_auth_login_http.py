@@ -73,3 +73,47 @@ def test_parse_login_page_missing_execution_raises():
     import pytest
     with pytest.raises(Exception):
         parse_login_page("<html>no form here</html>")
+
+
+import httpx
+import pytest
+
+from ows_gde_mcp.auth_login_http import http_login, HttpLoginError
+
+
+@pytest.mark.asyncio
+async def test_http_login_success(httpx_mock):
+    pub_pem, _ = _keypair_pem()
+    esc = pub_pem.replace(chr(10), "\\n")  # PEM as embedded JS string (literal \n)
+    login_html = (
+        '<input name="execution" value="EXEC1" type="hidden" />'
+        f'<script>var rsaPubBase64Str = "{esc}";'
+        ' var rsaPubVersion = "9";</script>'
+    )
+    # GET login page
+    httpx_mock.add_response(url="https://h.example.com/dspcas/login", text=login_html)
+    # POST credentials -> success redirect chain settles 200
+    httpx_mock.add_response(method="POST", url="https://h.example.com/dspcas/login",
+                            status_code=200, headers={"set-cookie": "PORTAL_SESSION_ID=abc; Path=/"})
+    # self-test sso/check -> true
+    httpx_mock.add_response(url="https://h.example.com/portal/web/rest/sso/check", json=True)
+
+    cookie, csrf = await http_login("https://h.example.com", "user", "pass")
+    assert "PORTAL_SESSION_ID=abc" in cookie
+
+
+@pytest.mark.asyncio
+async def test_http_login_failed_selftest_raises(httpx_mock):
+    pub_pem, _ = _keypair_pem()
+    esc = pub_pem.replace(chr(10), "\\n")
+    login_html = (
+        '<input name="execution" value="E"/>'
+        f'<script>var rsaPubBase64Str="{esc}";var rsaPubVersion="9";</script>'
+    )
+    httpx_mock.add_response(url="https://h.example.com/dspcas/login", text=login_html)
+    httpx_mock.add_response(method="POST", url="https://h.example.com/dspcas/login", status_code=200)
+    # self-test returns false -> not really logged in
+    httpx_mock.add_response(url="https://h.example.com/portal/web/rest/sso/check", json=False)
+
+    with pytest.raises(HttpLoginError):
+        await http_login("https://h.example.com", "user", "pass")
