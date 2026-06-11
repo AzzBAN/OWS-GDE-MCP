@@ -112,8 +112,15 @@ See `docs/discovery.md` for the full, sourced API map and
 ## Quickstart
 
 ```bash
-# 1. Install (use the optional `login` extra to enable auto-relogin)
-uv sync
+# 1. Install core dependencies (this is all most users need)
+uv sync                       # or: pip install -r requirements.txt
+                              # installs httpx, pydantic, cryptography, ... —
+                              # cryptography powers the pure-HTTP CAS login.
+                              # Dependencies are NOT auto-installed at runtime;
+                              # a missing core dep fails at import with ModuleNotFoundError.
+
+# 1b. OPTIONAL: only if HTTP login can't clear a host (captcha / MFA),
+#     install the Playwright fallback. Skip this unless you hit that error.
 uv pip install -e '.[login]'
 playwright install chromium
 
