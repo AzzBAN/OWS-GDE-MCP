@@ -45,3 +45,31 @@ def test_rsa_oaep_encrypt_accepts_pem_with_escaped_newlines():
         ),
     )
     assert plaintext.decode() == "secret"
+
+
+from ows_gde_mcp.auth_login_http import parse_login_page
+
+_LOGIN_HTML = '''
+<form id="submitForm" method="post" onsubmit="return checkSubmit()">
+  <input name="execution" value="e91fdd65-7952-47c7_TOKEN" type="hidden" />
+  <input name="rsaPubVersion" value="1754756346738" type="hidden" />
+</form>
+<script>
+  var rsaPubBase64Str = "-----BEGIN PUBLIC KEY-----\\nMIIBojANBg==\\n-----END PUBLIC KEY-----";
+  var rsaPubVersion = "1754756346738";
+</script>
+'''
+
+
+def test_parse_login_page_extracts_fields():
+    parsed = parse_login_page(_LOGIN_HTML)
+    assert parsed.execution == "e91fdd65-7952-47c7_TOKEN"
+    assert parsed.rsa_pub_version == "1754756346738"
+    assert parsed.rsa_pub_pem.startswith("-----BEGIN PUBLIC KEY-----")
+    assert "MIIBojANBg==" in parsed.rsa_pub_pem
+
+
+def test_parse_login_page_missing_execution_raises():
+    import pytest
+    with pytest.raises(Exception):
+        parse_login_page("<html>no form here</html>")

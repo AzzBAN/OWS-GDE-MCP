@@ -14,6 +14,8 @@ any failure so the caller can fall back to Playwright.
 from __future__ import annotations
 
 import base64
+import re
+from dataclasses import dataclass
 
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -42,3 +44,39 @@ def rsa_oaep_encrypt(plaintext: str, public_key_pem: str) -> str:
         ),
     )
     return base64.b64encode(ciphertext).decode("ascii")
+
+
+_EXECUTION_RE = re.compile(r'name="execution"\s+value="([^"]+)"')
+_PUBKEY_RE = re.compile(r'rsaPubBase64Str\s*=\s*"([^"]+)"')
+_PUBVER_RE = re.compile(r'rsaPubVersion\s*=\s*"([^"]+)"')
+
+
+@dataclass
+class LoginPage:
+    """The three hidden values scraped from GET /dspcas/login."""
+
+    execution: str
+    rsa_pub_pem: str       # PEM, real newlines (literal \n already normalised)
+    rsa_pub_version: str
+
+
+def parse_login_page(html: str) -> LoginPage:
+    """Extract `execution`, `rsaPubBase64Str`, `rsaPubVersion` from login HTML.
+
+    Raises:
+        HttpLoginError: if any required field is absent (page layout changed,
+            or we were served something other than the login form).
+    """
+    exec_m = _EXECUTION_RE.search(html)
+    pub_m = _PUBKEY_RE.search(html)
+    ver_m = _PUBVER_RE.search(html)
+    if not exec_m or not pub_m:
+        raise HttpLoginError(
+            "Could not parse CAS login page (missing execution token or public "
+            "key). The page layout may have changed."
+        )
+    return LoginPage(
+        execution=exec_m.group(1),
+        rsa_pub_pem=pub_m.group(1).replace("\\n", "\n"),
+        rsa_pub_version=ver_m.group(1) if ver_m else "",
+    )
