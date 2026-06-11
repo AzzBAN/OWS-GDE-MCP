@@ -18,7 +18,9 @@ import httpx
 
 from ows_gde_mcp.auth import AuthContext
 from ows_gde_mcp.auth_login import login as _cas_login
+from ows_gde_mcp.auth_login_http import HttpLoginError, http_login as _http_login
 from ows_gde_mcp.config import Settings, Surface, Tenant
+from ows_gde_mcp.hosts import host_of
 
 
 class OwsApiError(RuntimeError):
@@ -45,53 +47,84 @@ class _NeedsRelogin(Exception):
     """Internal sentinel: OWS bounced us to CAS. Caller should re-auth and retry."""
 
 
-# Per-process AuthContext cache, keyed by tenant. Lets refreshed cookies
-# survive across tool calls (each call creates a new OwsClient) and be reused
-# across surfaces (one CAS session covers both Studio and Runtime of the same
-# tenant). The cache lives only for the lifetime of this process — restarting
-# the MCP (or reconnecting via /mcp) clears it and re-reads .env.
-_auth_cache: dict[Tenant, AuthContext] = {}
+# Per-process AuthContext cache, keyed by host (netloc). A CAS session cookie
+# is bound to the host that issued it: testbed's studio + runtime share one
+# host (one login covers both), while prod's studio and runtime are distinct
+# hosts (each needs its own login). Lets refreshed cookies survive across tool
+# calls (each call creates a new OwsClient) and be reused across surfaces that
+# share a host. The cache lives only for the lifetime of this process —
+# restarting the MCP (or reconnecting via /mcp) clears it and re-reads .env.
+_auth_cache: dict[str, AuthContext] = {}
 
-# Per-tenant relogin lock + last-relogin timestamp. Module-level so concurrent
+# Per-host relogin lock + last-relogin timestamp. Module-level so concurrent
 # OwsClient instances (and concurrent callers from log_analysis.py) all
-# serialise through one lock. Fixes the bug where 66 concurrent log probes
-# each launched their own headless Chromium because the lock was per-client.
-_relogin_locks: dict[Tenant, asyncio.Lock] = {}
-_last_relogin_at: dict[Tenant, float] = {}
+# serialise through one lock per host. Fixes the bug where 66 concurrent log
+# probes each launched their own headless Chromium because the lock was
+# per-client.
+_relogin_locks: dict[str, asyncio.Lock] = {}
+_last_relogin_at: dict[str, float] = {}
 
 
-def _relogin_lock(tenant: Tenant) -> asyncio.Lock:
-    """Return the per-tenant relogin lock, creating it lazily."""
-    lock = _relogin_locks.get(tenant)
+def _relogin_lock(host: str) -> asyncio.Lock:
+    """Return the per-host relogin lock, creating it lazily."""
+    lock = _relogin_locks.get(host)
     if lock is None:
         lock = asyncio.Lock()
-        _relogin_locks[tenant] = lock
+        _relogin_locks[host] = lock
     return lock
 
 
-async def refresh_tenant_session(tenant: Tenant, settings: Settings) -> None:
-    """Run CAS login for `tenant` (serialised, deduplicated).
+async def refresh_host_session(base_url: str, tenant: Tenant, settings: Settings) -> None:
+    """Authenticate `base_url`'s host via HTTP->Playwright->error, cache the result.
 
-    Module-level entry point any code path can call (the OwsClient request
-    loop, log_analysis.py, prewarm, etc.) and be guaranteed exactly one
-    Playwright session ever runs concurrently. If another caller refreshed
-    within the last 5 seconds, this is a no-op — the in-memory auth is
-    already current.
+    Serialised + 5s-debounced per host. First step to yield a live session wins.
     """
-    async with _relogin_lock(tenant):
-        if time.monotonic() - _last_relogin_at.get(tenant, 0.0) < 5.0:
+    host = host_of(base_url)
+    async with _relogin_lock(host):
+        if time.monotonic() - _last_relogin_at.get(host, 0.0) < 5.0:
             return
-        cookie, csrf = await _cas_login(tenant, settings)
-        auth = _auth_cache.get(tenant)
+        username, password = _creds_for(tenant, settings)
+        if not username or not password:
+            raise RuntimeError(
+                f"No credentials to authenticate host '{host}'. Set "
+                f"OWS_{tenant.value.upper()}_USERNAME and "
+                f"OWS_{tenant.value.upper()}_PASSWORD in .env."
+            )
+        try:
+            cookie, csrf = await _http_login(base_url, username, password)
+        except HttpLoginError as http_err:
+            try:
+                cookie, csrf = await _cas_login(tenant, settings, base_url=base_url)
+            except RuntimeError as pw_err:
+                raise RuntimeError(
+                    f"Auto-login failed for '{host}'. HTTP login: {http_err}. "
+                    f"Playwright fallback: {pw_err}. Install Playwright with "
+                    "`uv pip install -e '.[login]' && playwright install chromium`, "
+                    f"or paste a cookie into OWS_{tenant.value.upper()}_SESSION_COOKIE."
+                ) from pw_err
+        auth = _auth_cache.get(host)
         if auth is None:
-            # Should never happen — _auth_for_tenant was called before any
-            # request that could 302. Defensive: build one in place.
             auth = AuthContext(cookie=cookie, csrf_token=csrf)
-            _auth_cache[tenant] = auth
+            _auth_cache[host] = auth
         else:
             auth.cookie = cookie
-            auth.csrf_token = csrf
-        _last_relogin_at[tenant] = time.monotonic()
+            if csrf:
+                auth.csrf_token = csrf
+        _last_relogin_at[host] = time.monotonic()
+
+
+def _creds_for(tenant: Tenant, settings: Settings) -> tuple[str | None, str | None]:
+    if tenant == Tenant.TESTBED:
+        return settings.OWS_TESTBED_USERNAME, settings.OWS_TESTBED_PASSWORD
+    return settings.OWS_PROD_USERNAME, settings.OWS_PROD_PASSWORD
+
+
+async def refresh_tenant_session(tenant: Tenant, settings: Settings) -> None:
+    """Backward-compat: refresh the tenant's runtime host (first configured surface)."""
+    surfaces = settings.configured_surfaces(tenant)
+    if not surfaces:
+        raise RuntimeError(f"No surface configured for tenant '{tenant.value}'.")
+    await refresh_host_session(settings.base_url(tenant, surfaces[0]), tenant, settings)
 
 
 # Path must start with exactly one '/', not '//' (protocol-relative), and must
@@ -129,13 +162,16 @@ def _validate_path(path: str) -> None:
             raise ValueError(f"path traversal segment '..' is not allowed: {path!r}")
 
 
-def _auth_for_tenant(tenant: Tenant, settings: Settings) -> AuthContext:
-    """Return the cached AuthContext for a tenant, building one if missing.
+def _auth_for_host(base_url: str, tenant: Tenant, settings: Settings) -> AuthContext:
+    """Return the cached AuthContext for a host, building one if missing.
 
     The cookie/CSRF live on the AuthContext; the URL the request gets sent to
-    is decided by the OwsClient that wraps it.
+    is decided by the OwsClient that wraps it. Seed values come from the
+    per-tenant env vars (unchanged source), else a placeholder that the first
+    302→CAS relogin replaces.
     """
-    cached = _auth_cache.get(tenant)
+    host = host_of(base_url)
+    cached = _auth_cache.get(host)
     if cached is not None:
         return cached
     if tenant == Tenant.TESTBED:
@@ -153,15 +189,22 @@ def _auth_for_tenant(tenant: Tenant, settings: Settings) -> AuthContext:
         # message.
         if not username:
             raise RuntimeError(
-                f"No session cookie configured for tenant '{tenant.value}' and no "
-                f"OWS_{tenant.value.upper()}_USERNAME / _PASSWORD for auto-relogin. "
-                f"Set OWS_{tenant.value.upper()}_SESSION_COOKIE in .env, or set "
-                "credentials to enable auto-login. See README.md."
+                f"No session cookie configured for host '{host}' and no "
+                f"OWS_{tenant.value.upper()}_USERNAME / _PASSWORD for auto-login. "
+                f"See README.md."
             )
         cookie = "_placeholder_=1"
     auth = AuthContext(cookie=cookie, csrf_token=csrf)
-    _auth_cache[tenant] = auth
+    _auth_cache[host] = auth
     return auth
+
+
+def _auth_for_tenant(tenant: Tenant, settings: Settings) -> AuthContext:
+    """Backward-compat: AuthContext for the tenant's runtime host."""
+    surfaces = settings.configured_surfaces(tenant)
+    if not surfaces:
+        raise RuntimeError(f"No surface configured for tenant '{tenant.value}'.")
+    return _auth_for_host(settings.base_url(tenant, surfaces[0]), tenant, settings)
 
 
 class OwsClient:
@@ -186,6 +229,7 @@ class OwsClient:
         self._tenant = tenant
         self._surface = surface
         self._settings = settings
+        self._base_url = base_url.rstrip("/")
         self._client = httpx.AsyncClient(
             base_url=base_url.rstrip("/"),
             timeout=timeout,
@@ -201,7 +245,7 @@ class OwsClient:
                 tenant has neither a session cookie nor login credentials.
         """
         base = settings.base_url(tenant, surface)
-        auth = _auth_for_tenant(tenant, settings)
+        auth = _auth_for_host(base, tenant, settings)
         return cls(base, auth, tenant, surface, settings)
 
     async def __aenter__(self) -> OwsClient:
@@ -308,15 +352,15 @@ class OwsClient:
             )
 
     async def _refresh_session(self) -> None:
-        """Delegate to the module-level `refresh_tenant_session`.
+        """Delegate to the module-level `refresh_host_session`.
 
         Kept as a method for backward compatibility with existing tests
         that monkeypatch `_cas_login` and call this directly. The real
-        deduplication lives in `refresh_tenant_session` so that callers
+        deduplication lives in `refresh_host_session` so that callers
         outside the OwsClient request loop (e.g. `log_analysis._fetch_csrf`)
-        share the same lock.
+        share the same per-host lock.
         """
-        await refresh_tenant_session(self._tenant, self._settings)
+        await refresh_host_session(self._base_url, self._tenant, self._settings)
 
     async def get(self, path: str, **kwargs: Any) -> Any:
         return await self.request("GET", path, **kwargs)
@@ -372,9 +416,10 @@ class OwsClient:
 async def prewarm_session(tenant: Tenant, settings: Settings) -> str | None:
     """Force a fresh CAS login for `tenant` at startup, populating the auth cache.
 
-    Picks whichever surface is configured (runtime preferred — login server
-    typically lives on the same host on both surfaces, and runtime is the
-    surface that's most reliably present).
+    Authenticates every configured surface's host so that distinct hosts (e.g.
+    prod's separate studio + runtime) each get a live session up front. Hosts
+    shared across surfaces (testbed) are deduplicated by `refresh_host_session`'s
+    per-host debounce.
 
     Returns a short status string for logging, or None if neither surface nor
     creds are configured (silent skip — startup must not fail when
@@ -383,17 +428,19 @@ async def prewarm_session(tenant: Tenant, settings: Settings) -> str | None:
     surfaces = settings.configured_surfaces(tenant)
     if not surfaces:
         return None
-    surface = surfaces[0]  # runtime preferred (configured_surfaces orders it first)
-    try:
-        client = OwsClient.for_surface(tenant, surface, settings)
-    except RuntimeError:
-        return None
-    try:
-        async with client:
-            await client._refresh_session()
-        return f"prewarmed {tenant.value} ({surface.value})"
-    except RuntimeError as e:
-        # Most likely: missing creds, or playwright not installed. Don't
-        # break startup — the first tool call will surface the same error
-        # with full context.
-        return f"prewarm skipped for {tenant.value}: {e}"
+    warmed: list[str] = []
+    errors: list[str] = []
+    for surface in surfaces:
+        try:
+            await refresh_host_session(settings.base_url(tenant, surface), tenant, settings)
+            warmed.append(surface.value)
+        except RuntimeError as e:
+            # Most likely: missing creds, or playwright not installed. Don't
+            # break startup — the first tool call will surface the same error
+            # with full context.
+            errors.append(f"{surface.value}: {e}")
+    if warmed and not errors:
+        return f"prewarmed {tenant.value} ({', '.join(warmed)})"
+    if not warmed:
+        return f"prewarm skipped for {tenant.value}: {'; '.join(errors)}"
+    return f"prewarmed {tenant.value} ({', '.join(warmed)}); skipped {'; '.join(errors)}"

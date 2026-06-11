@@ -231,10 +231,41 @@ async def test_studio_and_runtime_route_to_distinct_hosts(
     assert r_out == {"surface": "runtime"}
 
 
-def test_auth_shared_across_surfaces(fake_settings: Settings) -> None:
-    """One CAS session covers both surfaces of the same tenant — building
-    a studio client and then a runtime client must reuse the same
-    AuthContext (cookie + csrf identity)."""
-    c1 = OwsClient.for_surface(Tenant.TESTBED, Surface.STUDIO, fake_settings)
-    c2 = OwsClient.for_surface(Tenant.TESTBED, Surface.RUNTIME, fake_settings)
+def test_auth_shared_across_surfaces_on_same_host(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Auth is keyed by host, not tenant. Real testbed serves studio + runtime
+    from one host, so two surfaces that resolve to the same host must reuse the
+    same AuthContext (one CAS session covers both). Surfaces on distinct hosts
+    (prod's separate studio + runtime) must NOT share — each host logs in
+    independently."""
+    for var in (
+        "OWS_TESTBED_STUDIO_URL",
+        "OWS_TESTBED_RUNTIME_URL",
+        "OWS_TESTBED_SESSION_COOKIE",
+        "OWS_TESTBED_CSRF_TOKEN",
+        "OWS_PROD_STUDIO_URL",
+        "OWS_PROD_RUNTIME_URL",
+        "OWS_PROD_SESSION_COOKIE",
+        "OWS_PROD_CSRF_TOKEN",
+    ):
+        monkeypatch.delenv(var, raising=False)
+    settings = Settings(
+        _env_file=None,
+        # Testbed: studio + runtime on the SAME host (mirrors reality).
+        OWS_TESTBED_STUDIO_URL="https://testbed.example.com",
+        OWS_TESTBED_RUNTIME_URL="https://testbed.example.com",
+        OWS_TESTBED_SESSION_COOKIE="k=v",
+        OWS_TESTBED_CSRF_TOKEN="csrf-testbed",
+        # Prod: studio + runtime on DISTINCT hosts.
+        OWS_PROD_STUDIO_URL="https://prod-studio.example.com",
+        OWS_PROD_RUNTIME_URL="https://prod.example.com",
+        OWS_PROD_SESSION_COOKIE="k=v",
+        OWS_PROD_CSRF_TOKEN="csrf-prod",
+    )
+    # Same host → shared AuthContext.
+    c1 = OwsClient.for_surface(Tenant.TESTBED, Surface.STUDIO, settings)
+    c2 = OwsClient.for_surface(Tenant.TESTBED, Surface.RUNTIME, settings)
     assert c1._auth is c2._auth
+    # Distinct hosts → independent AuthContexts.
+    p1 = OwsClient.for_surface(Tenant.PROD, Surface.STUDIO, settings)
+    p2 = OwsClient.for_surface(Tenant.PROD, Surface.RUNTIME, settings)
+    assert p1._auth is not p2._auth

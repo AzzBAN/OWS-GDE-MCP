@@ -68,7 +68,7 @@ def fake_settings(monkeypatch: pytest.MonkeyPatch) -> Settings:
 def _patch_login(monkeypatch: pytest.MonkeyPatch, fn) -> list[int]:
     calls: list[int] = []
 
-    async def wrapper(tenant, settings):
+    async def wrapper(tenant, settings, base_url=None):
         calls.append(1)
         return await fn(tenant, settings)
 
@@ -83,6 +83,11 @@ async def test_relogin_after_302_succeeds_on_retry(
         return "new-cookie", "new-csrf"
 
     calls = _patch_login(monkeypatch, fake_login)
+
+    from ows_gde_mcp.auth_login_http import HttpLoginError
+    async def _http_fail(base_url, username, password):
+        raise HttpLoginError("forced fallback in test")
+    monkeypatch.setattr(client_mod, "_http_login", _http_fail)
 
     # First call: 302 → CAS. Second call (after relogin): 200.
     httpx_mock.add_response(
@@ -120,6 +125,11 @@ async def test_concurrent_relogin_runs_login_once(
         return "new-cookie", "new-csrf"
 
     calls = _patch_login(monkeypatch, fake_login)
+
+    from ows_gde_mcp.auth_login_http import HttpLoginError
+    async def _http_fail(base_url, username, password):
+        raise HttpLoginError("forced fallback in test")
+    monkeypatch.setattr(client_mod, "_http_login", _http_fail)
 
     # Five 302s, then five 200s — pytest-httpx matches in registration order
     # for same URL+method.
@@ -161,7 +171,7 @@ async def test_relogin_missing_creds_raises_clear_error(
     )
 
     async with OwsClient.for_surface(Tenant.TESTBED, Surface.RUNTIME, fake_settings) as client:
-        with pytest.raises(RuntimeError, match="USERNAME and OWS_TESTBED_PASSWORD"):
+        with pytest.raises(RuntimeError, match="OWS_TESTBED_USERNAME and OWS_TESTBED_PASSWORD"):
             await client.get("/portal/x")
 
 
@@ -172,6 +182,11 @@ async def test_two_consecutive_302s_do_not_loop(
         return "still-bad-cookie", "still-bad-csrf"
 
     _patch_login(monkeypatch, fake_login)
+
+    from ows_gde_mcp.auth_login_http import HttpLoginError
+    async def _http_fail(base_url, username, password):
+        raise HttpLoginError("forced fallback in test")
+    monkeypatch.setattr(client_mod, "_http_login", _http_fail)
 
     httpx_mock.add_response(
         url="https://testbed.example.com/portal/x",
