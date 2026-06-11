@@ -606,6 +606,7 @@ async def get_model(
     model_id: int,
     *,
     properties_only: bool = False,
+    confirm: bool = False,
 ) -> dict[str, Any]:
     """Fetch a Data Model's full schema by Studio model id.
 
@@ -622,11 +623,13 @@ async def get_model(
         properties_only: if True, return only `{model_id, model_name,
             properties}` — drops indexes, behaviors, validations, and other
             heavy sections.
+        confirm: required True on prod — this is a read, but issues POST, which the prod write-gate guards.
     """
     res = await _studio_post(
         tenant,
         "/adc-studio-model/web/rest/v1/models/query-by-id",
         params={"model_id": model_id},
+        confirm=confirm,
     )
     if not properties_only:
         return res
@@ -645,6 +648,7 @@ async def get_model_schema(
     project_name: str,
     module_name: str,
     model_name: str = "",
+    confirm: bool = False,
 ) -> dict[str, Any]:
     """Fetch full model schema(s) from Studio by name — no numeric ID needed.
 
@@ -665,6 +669,7 @@ async def get_model_schema(
         module_name: Studio module name (e.g. "cmdb").
         model_name: exact model name filter (e.g. "cmdb_cell"). Leave empty
             to return all models in the module (can be large).
+        confirm: required True on prod — this is a read, but issues POST, which the prod write-gate guards.
 
     Returns:
         If `model_name` is given and found:
@@ -685,6 +690,7 @@ async def get_model_schema(
             "/adc-studio-model/web/rest/v1/models/query-all",
             params={"project_name": project_name, "module_name": module_name},
             json={},
+            confirm=confirm,
         )
     except OwsApiError as e:
         return {
