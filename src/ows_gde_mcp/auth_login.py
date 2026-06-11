@@ -20,13 +20,22 @@ import contextlib
 from ows_gde_mcp.config import Settings, Tenant
 
 
-async def login(tenant: Tenant, settings: Settings) -> tuple[str, str]:
+async def login(
+    tenant: Tenant, settings: Settings, base_url: str | None = None
+) -> tuple[str, str]:
     """Run a headless CAS login and return (cookie_header, csrf_token).
 
     The CAS server is shared across surfaces of the same tenant, so one
     login covers both Studio and Runtime. We pick whichever surface is
     configured (runtime first — it's the one that's reliably present on
     every tenant the user can reach).
+
+    Args:
+        tenant: which tenant to log in to.
+        settings: app settings (credentials, URLs).
+        base_url: optional host to drive the login against (e.g.
+            ``https://ows.example.com``). When omitted, the first
+            configured surface's host is used (existing behaviour).
 
     Raises:
         RuntimeError: if creds aren't configured, no surface is configured,
@@ -47,14 +56,15 @@ async def login(tenant: Tenant, settings: Settings) -> tuple[str, str]:
             "to enable auto-relogin."
         )
 
-    surfaces = settings.configured_surfaces(tenant)
-    if not surfaces:
-        raise RuntimeError(
-            f"Cannot run CAS login for tenant '{tenant.value}': no studio or runtime "
-            f"URL is configured. Set OWS_{tenant_upper}_RUNTIME_URL or "
-            f"OWS_{tenant_upper}_STUDIO_URL in .env."
-        )
-    base_url = settings.base_url(tenant, surfaces[0])
+    if base_url is None:
+        surfaces = settings.configured_surfaces(tenant)
+        if not surfaces:
+            raise RuntimeError(
+                f"Cannot run CAS login for tenant '{tenant.value}': no studio or "
+                f"runtime URL is configured. Set OWS_{tenant_upper}_RUNTIME_URL or "
+                f"OWS_{tenant_upper}_STUDIO_URL in .env."
+            )
+        base_url = settings.base_url(tenant, surfaces[0])
 
     try:
         from playwright.async_api import async_playwright
