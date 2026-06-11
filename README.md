@@ -120,9 +120,8 @@ playwright install chromium
 # 2. Configure
 cp .env.example .env
 $EDITOR .env   # set the (tenant × surface) URLs you have access to,
-               # then EITHER paste a session cookie + CSRF token,
-               #        OR set OWS_<TENANT>_USERNAME / _PASSWORD for auto-login,
-               # or both (cookie used until it expires, then creds take over).
+               # then set OWS_<TENANT>_USERNAME / _PASSWORD (primary path),
+               # or paste a session cookie + CSRF token as a manual override.
 
 # 3. Smoke test
 uv run python -c "
@@ -195,12 +194,29 @@ explicitly via slash command:
 /ows-debug-service
 ```
 
+## Authentication
+
+Set `OWS_<TENANT>_USERNAME` / `_PASSWORD` in `.env`. The MCP performs a
+pure-HTTP CAS login on demand and caches the session **per host** — so prod's
+separate studio and runtime hosts each authenticate independently.
+
+If HTTP login can't clear a host (captcha / MFA), install the optional
+Playwright fallback:
+
+    uv pip install -e '.[login]' && playwright install chromium
+
+As a last resort you can paste a captured `OWS_<TENANT>_SESSION_COOKIE`
+(+ `_CSRF_TOKEN`) from a logged-in browser.
+
+Note: prod studio reads that issue POST (`get_model`, `get_model_schema`)
+require `confirm=true`, like other prod write-gated calls.
+
 ## Capturing the session cookie (manual fallback)
 
-Skip this section if you've set `OWS_<TENANT>_USERNAME` / `_PASSWORD` and
-installed the `login` extra — auto-relogin handles it. Use the manual path
-when you want to operate without storing the password, or when Playwright
-isn't available.
+Skip this section if you've set `OWS_<TENANT>_USERNAME` / `_PASSWORD` —
+HTTP auto-login handles it. Use the manual path when you want to operate
+without storing the password, or when neither HTTP nor Playwright login
+is available.
 
 OWS uses CAS (`/dspcas/login`) for SSO. The **session cookie is HttpOnly**, so
 JavaScript can't read it — you'll grab it once via DevTools.
