@@ -733,6 +733,7 @@ async def list_services(
     start: int = 0,
     limit: int = 50,
     include_flow: bool = False,
+    confirm: bool = False,
 ) -> dict[str, Any]:
     """List Services declared in a Studio project module.
 
@@ -747,6 +748,7 @@ async def list_services(
 
     Args:
         include_flow: if True, append `flow` to each summarized row.
+        confirm: required True on prod — this is a read, but issues POST, which the prod write-gate guards.
 
     Returns:
         Default: `{"total", "services": [{id, service_name, service_uri,
@@ -765,6 +767,7 @@ async def list_services(
             "start": start,
             "limit": limit,
         },
+        confirm=confirm,
     )
     instances = (res or {}).get("instances") or []
     summary = []
@@ -803,6 +806,7 @@ async def get_service(
     service_name: str,
     *,
     flow_only: bool = False,
+    confirm: bool = False,
 ) -> dict[str, Any]:
     """Fetch one Service's full definition (including its `flow` steps).
 
@@ -813,6 +817,7 @@ async def get_service(
     Args:
         flow_only: if True, return only `{service_name, flow}` — useful
             when the agent only wants to inspect the flow steps.
+        confirm: required True on prod — this is a read, but issues POST, which the prod write-gate guards.
     """
     res = await _studio_post(
         tenant,
@@ -824,6 +829,7 @@ async def get_service(
             "start": 0,
             "limit": 1,
         },
+        confirm=confirm,
     )
     instances = (res or {}).get("instances") or []
     for s in instances:
@@ -1515,6 +1521,7 @@ async def list_triggers(
     start: int = 0,
     limit: int = 50,
     verbose: bool = False,
+    confirm: bool = False,
 ) -> dict[str, Any]:
     """List Triggers declared in a Studio project module.
 
@@ -1530,6 +1537,7 @@ async def list_triggers(
         verbose: if True, return upstream trigger rows verbatim (drops
             the `_summarize_trigger` field selection). Lean default
             keeps the curated set.
+        confirm: required True on prod — this is a read, but issues POST, which the prod write-gate guards.
 
     Returns:
         `{"total", "page_size", "triggers": [{trigger_id, trigger_name,
@@ -1550,6 +1558,7 @@ async def list_triggers(
             tenant,
             "/adc-studio-model/web/rest/v1/triggers/page-query-all",
             json=body,
+            confirm=confirm,
         )
     except OwsApiError as e:
         return {

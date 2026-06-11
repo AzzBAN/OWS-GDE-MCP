@@ -78,6 +78,7 @@ async def list_service_scripts(
     script_name: str = "",
     start: int = 0,
     limit: int = 100,
+    confirm: bool = False,
 ) -> dict[str, Any]:
     """List the bundled scripts (RunScript, ScriptLib, Translator, Validator) in a module.
 
@@ -100,6 +101,7 @@ async def list_service_scripts(
         script_name: substring filter on script_name. Empty string = all.
         start: row offset (default 0).
         limit: max rows per page (default 100).
+        confirm: required True on prod — this is a read, but issues POST, which the prod write-gate guards.
 
     Returns:
         `{"total", "page", "page_size", "scripts": [{id, script_name,
@@ -119,7 +121,7 @@ async def list_service_scripts(
     if script_name:
         body["script_name"] = script_name
     try:
-        res = await _studio_post(tenant, _SERVICE_SCRIPT_PATH, json=body)
+        res = await _studio_post(tenant, _SERVICE_SCRIPT_PATH, json=body, confirm=confirm)
     except OwsApiError as e:
         return {
             "error": {
@@ -151,6 +153,7 @@ async def get_service_script(
     script_name: str,
     *,
     script_type: str = "",
+    confirm: bool = False,
 ) -> dict[str, Any]:
     """Fetch a service script's full JS body and metadata.
 
@@ -169,6 +172,7 @@ async def get_service_script(
         script_name: exact `script_name` to fetch (e.g. `runScript_um_handling`).
         script_type: optional `RunScript | ScriptLib | Translator |
             Validator` to disambiguate. Empty string = match any.
+        confirm: required True on prod — this is a read, but issues POST, which the prod write-gate guards.
 
     Returns:
         Single script row including `content` (the full JS body):
@@ -185,7 +189,7 @@ async def get_service_script(
         "limit": 100,
     }
     try:
-        res = await _studio_post(tenant, _SERVICE_SCRIPT_PATH, json=body)
+        res = await _studio_post(tenant, _SERVICE_SCRIPT_PATH, json=body, confirm=confirm)
     except OwsApiError as e:
         return {
             "error": {
