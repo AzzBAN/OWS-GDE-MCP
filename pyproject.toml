@@ -4,13 +4,32 @@ version = "0.0.1"
 description = "MCP server for Huawei OWS / GDE (Operation Web Services / General Digital Engine)"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = [
-    "mcp[cli]>=1.2.0",
-    "httpx>=0.27",
-    "pydantic>=2.7",
-    "pydantic-settings>=2.4",
-    "python-dotenv>=1.0",
+license = { text = "Apache-2.0" }
+authors = [{ name = "Azhar Baihaqi Nugraha" }]
+keywords = ["mcp", "ows", "gde", "huawei", "model-context-protocol"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries",
 ]
+dependencies = [
+    "mcp[cli]>=1.2.0,<2",
+    "httpx>=0.27,<0.29",
+    "pydantic>=2.7,<3",
+    "pydantic-settings>=2.4,<3",
+    "python-dotenv>=1.0,<2",
+]
+
+[project.optional-dependencies]
+login = ["playwright>=1.40,<2"]
+
+[project.urls]
+Homepage = "https://github.com/azharnugraha/ows-gde-mcp"
+Issues = "https://github.com/azharnugraha/ows-gde-mcp/issues"
 
 [project.scripts]
 ows-gde-mcp = "ows_gde_mcp.server:cli"

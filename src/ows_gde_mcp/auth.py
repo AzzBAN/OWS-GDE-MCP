@@ -60,12 +60,13 @@ def now_ms() -> int:
     return int(time.time() * 1000)
 
 
-@dataclass(frozen=True)
+@dataclass
 class AuthContext:
     """Holds session-level secrets the MCP needs to talk to one tenant.
 
-    Built once per tenant from env vars (`config.Settings`). Stateless apart
-    from these fields; new headers are computed for each request.
+    Built once per tenant from env vars (`config.Settings`). `cookie` and
+    `csrf_token` are mutable so the auto-relogin path can refresh them in
+    place after a CAS redirect.
     """
 
     cookie: str

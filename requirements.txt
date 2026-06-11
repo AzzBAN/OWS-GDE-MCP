@@ -1,0 +1,13 @@
+# Core runtime dependencies for ows-gde-mcp
+# Mirrors [project.dependencies] in pyproject.toml.
+# pyproject.toml remains the source of truth; this file is for pip-based installs.
+
+mcp[cli]>=1.2.0,<2
+httpx>=0.27,<0.29
+pydantic>=2.7,<3
+pydantic-settings>=2.4,<3
+python-dotenv>=1.0,<2
+
+# Optional: required only for the Playwright-based CAS auto-login (the `login` extra).
+# Uncomment to install, then run `playwright install chromium`.
+# playwright>=1.40,<2

@@ -1,6 +1,6 @@
 # Discovery — Testbed walk (Phase 0)
 
-Findings from headed-browser exploration of `https://1057-sg-studio.teleows.com/`
+Findings from headed-browser exploration of `https://<your-tenant>-studio.example.com/`
 via Playwright MCP. **Authentication scheme is fully reverse-engineered.**
 
 Raw captures live in `docs/discovery/testbed/raw/` (gitignored except sanitized
@@ -8,15 +8,29 @@ examples). Sample app exports live in `docs/discovery/testbed/sample-apps/`.
 
 ---
 
-## Tenants & hosts
+## Tenants & surfaces
 
-| Tenant   | Studio (design state)               | Runtime                       |
-|----------|-------------------------------------|-------------------------------|
-| Testbed  | `https://1057-sg-studio.teleows.com`| _unknown — testbed appears to be studio-only_ |
-| Prod     | _unknown_                           | `https://1057-sg.teleows.com` |
+OWS has two independent axes:
 
-The testbed Studio host hosts **both** the design portal (`?isStudio=true`) and
-the runtime mission console.
+- **Tenant** — `prod` or `testbed`. Separate environments with their own
+  accounts and CAS servers.
+- **Surface** — `studio` (design-time authoring; APIs under `/adc-studio-*/`)
+  or `runtime` (deployed apps; portal + `/adc-model/` + `/adc-service/`).
+
+A tenant can have either, both, or neither surface available to a given user.
+Typical workflow: author in testbed studio → preview on testbed runtime →
+deploy to prod runtime. Production studio is normally unavailable to
+developers.
+
+| Tenant   | Studio (design-time)                  | Runtime (deployed apps)              |
+|----------|---------------------------------------|--------------------------------------|
+| Testbed  | `https://<tenant>-studio.example.com` | `https://<tenant>-studio.example.com` (same host on this testbed) |
+| Prod     | _typically unavailable to developers_ | `https://<tenant>.example.com`        |
+
+On the testbed Studio host the same origin serves both surfaces (design
+portal exposed via `?isStudio=true`, runtime mission console via the default
+homepage). Auth is shared across surfaces of the same tenant — one CAS
+session covers both.
 
 ---
 
@@ -30,8 +44,8 @@ OWS uses a layered scheme:
 2. **Session cookies (HttpOnly).** After login the browser holds session
    cookies — these are HttpOnly and *not* visible from JS. Visible
    non-HttpOnly cookies seen so far:
-   - `tenant_id`, `x-gde-tenant-id` = `1057`
-   - `username` = `awx1320635`
+   - `tenant_id`, `x-gde-tenant-id` = `<tenantId>`
+   - `username` = `<your-account>`
    - `x-gde-locale`, `_LOCALE_`, `locale`
    - `x-gde-timezone` (JSON)
    - `lastestOperationTime` (epoch ms)
@@ -107,7 +121,7 @@ $.ajaxSetup({beforeSend: function (xhr, n) {
 
 ## API host map (backend services discovered)
 
-All same-origin under `https://1057-sg-studio.teleows.com`:
+All same-origin under `https://<tenant>-studio.example.com`:
 
 | Mount                                | Purpose |
 |--------------------------------------|---------|
@@ -289,7 +303,7 @@ The MCP's job is to make every one of these queryable.
   interceptor for fetch.
 - One asset name observed: `mtask_work` (used 8× in TQL init on homepage).
 - Static-asset CDN paths embed `tenantId/Project/Module`, e.g.
-  `/adc-static/static/jslibComp/1057/WFMBase/mission_control_service/...`.
+  `/adc-static/static/jslibComp/<tenantId>/WFMBase/mission_control_service/...`.
 - Console errors on first load include a `502 Bad Gateway` for
   `/adc-copilot/static/experiences.js` — the AI copilot is not provisioned on
   this tenant; safe to ignore.
@@ -371,7 +385,160 @@ This URI also appears as `asset_uri=` on the live API
       Especially: AI Studio / Agent / MCP / RPA (not represented in samples).
 - [ ] Wrap the online help (`/adc-studio-project-mgt/web/rest/help/doc/...`)
       so the MCP can answer "what is this artifact?" with citations.
-- [ ] Confirm whether Production has a separate `*-studio` subdomain or runs
-      Studio at the same host.
 - [ ] Determine CAS login flow if we want headless (programmatic) login —
       otherwise rely on cookie paste or interactive Playwright login.
+
+## Endpoints needing live verification
+
+_(none open — list_pages and list_scripts were verified on 2026-05-15 by
+walking the page-list and script-management UIs in a logged-in browser
+and capturing the network calls. See live-verified entries below.
+PR3 added live-verified endpoints for triggers, page-detail, log-search,
+and the studio element-type catalogue — all documented below.)_
+
+#### Triggers (`/adc-studio-model/web/rest/v1/triggers/`)
+| Op | Method | Path |
+|---|---|---|
+| List/page-query triggers in module | POST | `/adc-studio-model/web/rest/v1/triggers/page-query-all` body `{project_name, module_name, trigger_name?, active?, start, limit}` |
+
+Response shape (verified):
+```json
+{
+  "content": [{"trigger_id", "trigger_name", "model_uri", "event_type",
+                "before_or_after", "active", "condition", "source",
+                "trigger_activities": [{"activity_type": "Invoke Service",
+                  "service_rest_uri": "/adc-service/rest/v1/services/<p>/<m>/<svc>",
+                  "priority", "sync", "write_back", ...}]}],
+  "totalElements": int, "totalPages": int, "size": int, "number": int
+}
+```
+
+`trigger_activities[].service_rest_uri` is the field PR3b's reference
+scanner walks to count "service fired by trigger" as a strong static
+ref. `model_uri` is the model whose create/update/delete event fires
+the trigger.
+
+#### Page detail with content tree (`/adc-studio-ui/web/rest/v1/page-core/page/{id}`)
+| Op | Method | Path |
+|---|---|---|
+| Page detail (full content) | GET | `/adc-studio-ui/web/rest/v1/page-core/page/{page_id}` |
+
+The list endpoint returns metadata only (`content` is null). This
+detail endpoint returns the same row plus a `content` field holding the
+recursive UI tree as a JSON-encoded string. Scan for service refs in:
+- component props (`serviceName`, `serviceId`, `location`)
+- `js_content` blocks (the page's Script tab — embedded JS calls
+  `MessageProcessor.process({serviceId: "..."})`)
+- `propsBind` and event handlers
+
+#### Log Analysis search (`/loganalysis/service/`)
+
+Different auth scheme — see `src/ows_gde_mcp/tools/log_analysis.py`. CSRF
+header is `X-CSRF-TOKEN` (not `x-gde-csrf-token`), token is embedded as
+inline JS in `/loganalysis/service/index.html`:
+```html
+<script>(function() {
+    var csrftoken = {header:"X-CSRF-TOKEN", param:"_csrf", token:"<HEX>"};
+    ...
+})()</script>
+```
+The standard GDE anti-tamper headers (`x-adc-page-token`, etc) are
+*rejected* by this service — must be omitted. `referer` must be
+`/loganalysis/service/index.html`.
+
+| Op | Method | Path |
+|---|---|---|
+| Log search | POST | `/loganalysis/service/logsearch/v3/logs/search` body `{tableType: 2, pageIndex, pageSize, startTime, endTime, isCaseSensitive, filters?: [{field, value}]}` |
+| Filter conditions | GET | `/loganalysis/service/getFilterCondition?tableType=2` |
+| Column fields | GET | `/loganalysis/service/queryColumnField?tableType=2` |
+
+Response shape (verified):
+```json
+{
+  "status": "OK",
+  "result": {
+    "pageIndex": 1, "pageSize": 20, "recordCount": 280491,
+    "result": [{
+      "id": "<uuid>", "log_time_millis": ..., "trace_id": "<hex>",
+      "operator": "...", "app_name": "...", "module_name": "...",
+      "element_type": "JavaScript", "element_name": "<service-or-script>",
+      "operation_type": "Log", "log_level": "WARN|ERROR|INFO|DEBUG",
+      "cost_time": int, "log_content": "...", "location_info": "service=...| step=...",
+      ...
+    }, ...]
+  }
+}
+```
+
+Useful filter fields: `app_name`, `module_name`, `element_name`
+(service name), `trace_id`, `log_level`. Trace ids correlate
+cross-service calls — `get_log_trace(trace_id)` returns every log entry
+sharing the trace id, sorted chronologically.
+
+**Retention**: ~3 days on this tenant. Wider windows are silently
+rejected — `search_service_logs` clamps and warns.
+
+#### Studio element-type catalogue (`/adc-studio-project-mgt/web/rest/v1/modules/element-type`)
+| Op | Method | Path |
+|---|---|---|
+| All element types | GET | `/adc-studio-project-mgt/web/rest/v1/modules/element-type` |
+
+Returns the master list behind the Studio resource picker — ~80 types
+across Common, Data Factory, AI Studio, Agent, Openness Integration,
+Interface Package, RPA, OM Events, MCP, Data Package, Automatic
+Diagnosis and Recovery. Each row carries `id`, `item_type`, `label`,
+`navigate_uri` (double-encoded JSON string with the Studio UI URLs for
+this type), `engine_id`, `display`. The wrapper in
+`tools/live.py:list_studio_element_types` parses `navigate_uri` and
+filters to `display=true` by default.
+
+#### Pages (`/adc-studio-ui/web/rest/v1/page-core/page/`)
+| Op | Method | Path |
+|---|---|---|
+| List pages in a module | GET | `/adc-studio-ui/web/rest/v1/page-core/page/{projectName}/{moduleName}?active=true&sort=updateTime&dir=DESC&page=0&pageSize=10&type=responsive-web&name=&tagId=&displayName=&moduleName=...&projectName=...` |
+| List customizable pages | GET | `/adc-studio-ui/web/rest/v1/page-core/page/customizable-page-list?projectName=...&moduleName=...&name=` |
+| Page-core page detail (TBD: not yet wrapped) | GET | `/adc-studio-ui/web/rest/v1/page-core/page/...` |
+
+Page list response shape (verified):
+```json
+{
+  "data": [{"id", "name", "display_name", "type", "module_name", "project_name",
+            "model_name", "active", "open_level", "manifest_version", "creator",
+            "updater", "create_time", "update_time", "tag_id", "customizable",
+            "content": null, ...}],
+  "total": 35, "totalPage": 7, "page": 0, "pageSize": 5
+}
+```
+The list endpoint never ships the `content` (recursive UI tree) — that needs
+a separate detail call.
+
+#### MCP Scripts (`/adc-studio-mcp/web/rest/v1/`)
+| Op | Method | Path |
+|---|---|---|
+| List MCP scripts | GET | `/adc-studio-mcp/web/rest/v1/scriptmgt/scripts?limit=&start=&name=&script_type=&project_name=&module_name=` |
+| Script types | GET | `/adc-studio-mcp/web/rest/v1/scriptmgt/scripts/template?...` |
+| Script templates | GET | `/adc-studio-mcp/web/rest/v1/scriptmgt/script/templates?limit=100` |
+| Name-exists check | GET | `/adc-studio-mcp/web/rest/v1/scriptmgt/scripts/exist/?name=` |
+
+MCP script list response shape (verified):
+```json
+{
+  "resultCode": "0",
+  "resultMessage": "Success",
+  "result": {
+    "results": [{"id", "name", "script_type": "python", "type": "diagnose",
+                  "file": "x.py", "project_name", "module_name",
+                  "manifest_version", "risk_level": "Low|Medium|High"}],
+    "start": 0, "total": 642
+  }
+}
+```
+
+The MCP-Script category is the `Script` element-type id 35 (`SCRIPT_MANAGEMENT`)
+and is a *separate* artifact category from RPA Script (id 29), Page Script
+(id 45), Mobile Page Script (id 64), Mateline Script (id 56), and the three
+CEAE script variants (52/53/55). RPA scripts ship under
+`/adc-studio-web/rpa/...` (different backend, not yet wrapped). The inline
+`RunScript/`/`ScriptLib/` files that appear in `.gpk` exports under SERVICE/
+live *under* a service flow — not as top-level Script artifacts — and are
+fetched via the SERVICE endpoint, not list_scripts.

@@ -30,6 +30,7 @@ trace.zip
 # Discovery dumps may contain sensitive request/response payloads.
 # Commit only sanitized examples placed under docs/discovery/examples/.
 docs/discovery/raw/
+docs/discovery/scratch/
 docs/discovery/*.har
 docs/discovery/**/*.json
 !docs/discovery/examples/**
@@ -39,6 +40,14 @@ docs/discovery/**/*.json
 docs/discovery/**/sample-apps/
 *.gpk
 *.gpk.zip
+
+# Local OWS help corpus cache — populated by `scripts/fetch_help_docs.py`.
+# 50+ MB of static documentation HTML; not source-controlled.
+docs/help/**/*.html
+docs/help/**/*.json
+docs/help/**/figure/
+docs/help/**/public_sys-resources/
+!docs/help/.gitkeep
 
 # Playwright MCP per-session artifacts (snapshots, console logs).
 .playwright-mcp/
