@@ -224,3 +224,35 @@ async def test_prod_write_gate_runs_before_any_network_attempt(
     async with OwsClient.for_surface(Tenant.PROD, Surface.RUNTIME, fake_settings) as client:
         with pytest.raises(PermissionError, match="OWS_PROD_WRITE_ENABLED"):
             await client.post("/portal/x", json={})
+
+
+async def test_relogin_surfaces_credential_error(monkeypatch):
+    s = Settings(
+        _env_file=None,
+        OWS_TESTBED_RUNTIME_URL="https://testbed.example.com",
+        OWS_TESTBED_USERNAME="u",
+        OWS_TESTBED_PASSWORD="p",
+    )
+    client_mod._auth_cache.clear()
+    client_mod._last_relogin_at.clear()
+
+    async def boom_http(*a, **k):
+        from ows_gde_mcp.auth_login_http import HttpLoginError
+
+        raise HttpLoginError("forced")
+
+    async def boom_cas(*a, **k):
+        raise RuntimeError("CAS login for testbed rejected: 'bad password'")
+
+    monkeypatch.setattr(client_mod, "_http_login", boom_http)
+    monkeypatch.setattr(client_mod, "_cas_login", boom_cas)
+    monkeypatch.setattr(
+        client_mod,
+        "_fetch_csrf_browser",
+        lambda *a, **k: (_ for _ in ()).throw(RuntimeError()),
+    )
+
+    with pytest.raises(RuntimeError, match="rejected"):
+        await client_mod.refresh_host_session(
+            "https://testbed.example.com", Tenant.TESTBED, s
+        )

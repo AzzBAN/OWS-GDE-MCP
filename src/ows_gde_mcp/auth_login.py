@@ -94,6 +94,30 @@ async def login(
             with contextlib.suppress(Exception):
                 await page.get_by_role("button", name="Change Later").click(timeout=5_000)
 
+            # Fail fast on an explicit CAS credential error rather than
+            # waiting out the homepage timeout. Suppress only the locator
+            # lookup (the element is absent on the happy path); the
+            # deliberate rejection must propagate, so it is raised OUTSIDE
+            # the suppress block.
+            err_text = None
+            with contextlib.suppress(Exception):
+                err_text = await page.locator(".login-form-error").first.text_content(
+                    timeout=3_000
+                )
+            if err_text and err_text.strip():
+                raise RuntimeError(
+                    f"CAS login for {tenant.value} rejected: {err_text.strip()!r} "
+                    "— check OWS_<TENANT>_USERNAME / _PASSWORD."
+                )
+
+            # Some tenants bounce through a w3 SSO interstitial on the way
+            # to the portal. Click the clientredirect link to continue.
+            with contextlib.suppress(Exception):
+                if "/dspcas/login" in page.url.lower():
+                    sso = page.locator('a[href*="clientredirect"]').first
+                    if await sso.count() > 0:
+                        await sso.click(timeout=5_000)
+
             # Wait until the redirect chain settles on the portal homepage,
             # then wait for the SPA's bootstrap network calls to drain — some
             # session-establishment cookies are only set by post-homepage XHRs.
