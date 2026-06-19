@@ -41,13 +41,25 @@ docs/discovery/**/sample-apps/
 *.gpk
 *.gpk.zip
 
-# Local OWS help corpus cache — populated by `scripts/fetch_help_docs.py`.
-# 50+ MB of static documentation HTML; not source-controlled.
-docs/help/**/*.html
-docs/help/**/*.json
-docs/help/**/figure/
-docs/help/**/public_sys-resources/
+# OWS knowledge vault — the per-project default is ./ows-vault (override with
+# OWS_VAULT_DIR). AUTO-GENERATED parts are regenerable and NOT committed:
+#   - Reference/   : imported OWS help corpus (scripts/import_help_corpus.py)
+#   - .index/      : sidecar search index
+#   - .obsidian/   : Obsidian workspace state
+# The CURATED parts (ows-vault/Home.md, ows-vault/00 Findings/**) ARE tracked.
+ows-vault/Reference/
+ows-vault/.index/
+ows-vault/.obsidian/
+# Legacy flat HTML cache from scripts/fetch_help_docs.py.
+docs/help/en_US/
 !docs/help/.gitkeep
+
+# Per-project finding vaults created by installed plugins elsewhere are the
+# user's to manage; this only governs THIS repo's ows-vault.
+
+# Skill runtime scratch — downloaded attachments / OCR temp. May contain
+# customer data; never commit.
+**/tmp_attachments/
 
 # Playwright MCP per-session artifacts (snapshots, console logs).
 .playwright-mcp/

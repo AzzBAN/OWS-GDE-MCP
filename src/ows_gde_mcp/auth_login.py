@@ -94,6 +94,30 @@ async def login(
             with contextlib.suppress(Exception):
                 await page.get_by_role("button", name="Change Later").click(timeout=5_000)
 
+            # Fail fast on an explicit CAS credential error rather than
+            # waiting out the homepage timeout. Suppress only the locator
+            # lookup (the element is absent on the happy path); the
+            # deliberate rejection must propagate, so it is raised OUTSIDE
+            # the suppress block.
+            err_text = None
+            with contextlib.suppress(Exception):
+                err_text = await page.locator(".login-form-error").first.text_content(
+                    timeout=3_000
+                )
+            if err_text and err_text.strip():
+                raise RuntimeError(
+                    f"CAS login for {tenant.value} rejected: {err_text.strip()!r} "
+                    "— check OWS_<TENANT>_USERNAME / _PASSWORD."
+                )
+
+            # Some tenants bounce through a w3 SSO interstitial on the way
+            # to the portal. Click the clientredirect link to continue.
+            with contextlib.suppress(Exception):
+                if "/dspcas/login" in page.url.lower():
+                    sso = page.locator('a[href*="clientredirect"]').first
+                    if await sso.count() > 0:
+                        await sso.click(timeout=5_000)
+
             # Wait until the redirect chain settles on the portal homepage,
             # then wait for the SPA's bootstrap network calls to drain — some
             # session-establishment cookies are only set by post-homepage XHRs.
@@ -178,3 +202,56 @@ async def login(
             "(checked window.csrfToken and localStorage.csrfTokens)."
         )
     return cookie_header, csrf
+
+
+async def fetch_csrf_via_browser(base_url: str) -> tuple[str, str]:
+    """Open the portal headless and read `localStorage.csrfTokens[0]`.
+
+    Returns `(csrf_token, csrf_header)`. The token is set by the SPA's
+    bootstrap JS, so it is only reachable from a real browser context —
+    there is no REST endpoint that mints it. Reuses any cookies the caller
+    has already established by visiting the portal first.
+
+    Raises:
+        RuntimeError: if playwright isn't installed or the token never
+            appears (likely the session isn't actually logged in).
+    """
+    try:
+        from playwright.async_api import async_playwright
+    except ImportError as e:
+        raise RuntimeError(
+            "playwright is required to capture the CSRF token. Install with: "
+            "uv pip install -e '.[login]' && playwright install chromium"
+        ) from e
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        try:
+            context = await browser.new_context(ignore_https_errors=True)
+            page = await context.new_page()
+            await page.goto(base_url.rstrip("/") + "/portal-web/", timeout=45_000)
+            handle = await page.wait_for_function(
+                """() => {
+                    const raw = window.localStorage &&
+                        localStorage.getItem('csrfTokens');
+                    if (!raw) return window.csrfToken
+                        ? {csrfToken: window.csrfToken, headerKey: 'x-gde-csrf-token'}
+                        : null;
+                    try {
+                        const arr = JSON.parse(raw);
+                        const e = arr && arr[0];
+                        return (e && e.csrfToken)
+                            ? {csrfToken: e.csrfToken, headerKey: e.headerKey || 'x-gde-csrf-token'}
+                            : null;
+                    } catch (err) { return null; }
+                }""",
+                timeout=30_000,
+            )
+            data = await handle.json_value()
+        finally:
+            await browser.close()
+    token = (data or {}).get("csrfToken")
+    header = (data or {}).get("headerKey") or "x-gde-csrf-token"
+    if not token:
+        raise RuntimeError("CSRF token not found in localStorage.csrfTokens.")
+    return token, header

@@ -163,20 +163,49 @@ Add to your MCP client config (Claude Desktop, Devin, Windsurf, etc.):
 }
 ```
 
-## Claude Code Skills
+## Claude Code plugin (skills + MCP + knowledge vault)
 
-This repo ships a set of Claude Code skills that guide the AI through common
-OWS development workflows. Skills are stored in
-`.claude/plugins/ows-skills/` and must be installed once per machine.
+This repo is also a **Claude Code plugin marketplace**. Installing the plugin
+brings, in one step: the MCP server (run via `uv`), the guidance skills, an
+evolving knowledge vault, and a SessionStart hook that surfaces curated
+findings into context.
 
-### Install
+### Install from GitHub
 
 ```bash
-# 1. Add the OWS marketplace
-claude plugin marketplace add /path/to/OWS_MCP/.claude/marketplace --scope user
+# 1. Add this repo as a marketplace
+claude plugin marketplace add AzzBAN/OWS-GDE-MCP
 
-# 2. Install the skills plugin
-claude plugin install ows-skills@ows-gde --scope user
+# 2. Install the plugin (skills + MCP + hook)
+claude plugin install ows-gde-mcp@ows-gde
+```
+
+`uv` must be on your PATH — the bundled MCP runs as
+`uv run --project ${CLAUDE_PLUGIN_ROOT} ows-gde-mcp serve` and syncs its deps on
+first launch. Set your `OWS_*` credentials (see `.env.example`) in the project
+where you use it. Skills are namespaced under the plugin, e.g.
+`/ows-gde-mcp:ows-query`, and also trigger automatically by description.
+
+> Prefer to wire the MCP yourself instead of bundling? Skip the plugin and add
+> the `mcpServers` config above; the skills can still be installed standalone.
+
+### Knowledge vault & findings
+
+The help tools read an Obsidian-standard vault, resolved from `OWS_VAULT_DIR`
+(default `./ows-vault` — per project):
+
+- `get_help_home` — the curated Map of Content (read first).
+- `search_help` — full-text search; **curated `00 Findings/` rank above** the
+  auto-generated `Reference/` corpus.
+- `add_help_finding(title, body, tags=[...])` — capture a reusable platform
+  finding. Findings are plain markdown in `00 Findings/`, meant to be committed
+  and shared. The `ows-capture-finding` skill drives this flow.
+
+Populate the read-only reference corpus (regenerable, gitignored) with:
+
+```bash
+uv run python scripts/import_help_corpus.py \
+    --vault ~/codes/huaweed/knowledge-helper/vault
 ```
 
 ### Available skills

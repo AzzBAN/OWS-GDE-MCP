@@ -16,13 +16,13 @@ from mcp.server.fastmcp import FastMCP
 from ows_gde_mcp import __version__
 from ows_gde_mcp.client import OwsApiError, OwsClient, prewarm_session
 from ows_gde_mcp.config import Surface, Tenant, settings
-from ows_gde_mcp.tools import help as _help
 from ows_gde_mcp.tools import files as _files
 from ows_gde_mcp.tools import flow_debug as _flow
+from ows_gde_mcp.tools import help as _help
 from ows_gde_mcp.tools import live as _live
 from ows_gde_mcp.tools import log_analysis as _logs
-from ows_gde_mcp.tools import processes as _procs
 from ows_gde_mcp.tools import packages as _pkgs
+from ows_gde_mcp.tools import processes as _procs
 from ows_gde_mcp.tools import references as _refs
 from ows_gde_mcp.tools import scripts as _scripts
 
@@ -82,10 +82,15 @@ mcp.tool()(_scripts.list_page_scripts)
 mcp.tool()(_files.list_file_attachments)
 mcp.tool()(_files.download_file_attachment)
 
-# OWS help corpus — local-cache only (populate via `scripts/fetch_help_docs.py`).
+# OWS knowledge vault — local Obsidian vault (populate via
+# `scripts/import_help_corpus.py`). get_help_home returns the curated MOC;
+# search_help ranks curated findings above the reference corpus;
+# add_help_finding lets the end user grow the vault.
+mcp.tool()(_help.get_help_home)
 mcp.tool()(_help.list_help_topics)
 mcp.tool()(_help.get_help_topic)
 mcp.tool()(_help.search_help)
+mcp.tool()(_help.add_help_finding)
 
 # Cross-reference analysis (live OWS only for now; from_package = PR2.5)
 mcp.tool()(_refs.find_artifact_references)
@@ -235,6 +240,18 @@ def cli() -> None:
         "every tenant with credentials configured so the first tool call "
         "doesn't pay the relogin cost.",
     )
+    findings = sub.add_parser(
+        "findings",
+        help="Print the knowledge-vault home + curated findings (for the "
+        "SessionStart hook). Reads the vault resolved from OWS_VAULT_DIR or "
+        "./ows-vault; never makes network calls.",
+    )
+    findings.add_argument(
+        "--hook",
+        action="store_true",
+        help="Emit a Claude Code SessionStart hook JSON object "
+        "({hookSpecificOutput.additionalContext}) instead of plain text.",
+    )
     args = parser.parse_args()
 
     if args.cmd == "serve":
@@ -245,9 +262,48 @@ def cli() -> None:
             mcp.run(transport="streamable-http")
         else:
             mcp.run()
+    elif args.cmd == "findings":
+        _emit_findings(hook=args.hook)
     else:
         parser.print_help()
         sys.exit(2)
+
+
+def _emit_findings(*, hook: bool) -> None:
+    """Print the vault MOC + curated findings; for the SessionStart hook.
+
+    Best-effort: if no vault/findings exist, emits nothing (exit 0) so a fresh
+    project doesn't get a noisy hook error.
+    """
+    import json as _json
+
+    home = _help.get_help_home()
+    if "error" in home:
+        return  # no vault yet — stay quiet
+    parts = [f"# OWS knowledge vault\n\n{home.get('text', '')}".strip()]
+    for f in home.get("findings", []):
+        topic = _help.get_help_topic(f["local"])
+        if "error" not in topic:
+            parts.append(topic.get("text", "").strip())
+    context = "\n\n---\n\n".join(p for p in parts if p)
+    if not context.strip():
+        return
+    if hook:
+        print(
+            _json.dumps(
+                {
+                    "hookSpecificOutput": {
+                        "hookEventName": "SessionStart",
+                        "additionalContext": (
+                            "OWS knowledge vault — curated findings (read these "
+                            "before searching the corpus):\n\n" + context
+                        ),
+                    }
+                }
+            )
+        )
+    else:
+        print(context)
 
 
 async def _prewarm_all() -> None:

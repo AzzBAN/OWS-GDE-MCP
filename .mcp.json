@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "ows-gde": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--project",
+        "${CLAUDE_PLUGIN_ROOT}",
+        "ows-gde-mcp",
+        "serve",
+        "--no-prewarm"
+      ]
+    }
+  }
+}

@@ -24,6 +24,7 @@ from typing import Any
 
 from ows_gde_mcp.client import OwsApiError, OwsClient
 from ows_gde_mcp.config import Surface, Tenant, settings
+from ows_gde_mcp.service_guard import is_write_service
 
 # Page-tree fields whose values typically hold a service reference.
 # Matches the prop conventions documented on `get_page_detail` itself.
@@ -237,6 +238,7 @@ async def call_ows_api(
     body: Any = None,
     params: dict[str, Any] | None = None,
     confirm: bool = False,
+    allow_write: bool = False,
 ) -> Any:
     """Generic escape hatch — call any OWS endpoint that we haven't yet
     wrapped with a typed tool.
@@ -257,6 +259,8 @@ async def call_ows_api(
         body: optional JSON body (for POST/PUT/etc.).
         params: optional query-string parameters.
         confirm: required `True` to allow non-GET methods against `prod`.
+        allow_write: set True to bypass the name-based write guard for a
+                path whose final segment matches a write keyword.
 
     Returns:
         Parsed JSON response (or raw text if not JSON).
@@ -264,6 +268,21 @@ async def call_ows_api(
     t = Tenant(tenant)
     s = Surface(surface)
     method_u = method.upper()
+    # Name-based safety net for the generic escape hatch: block obvious
+    # write services on any tenant unless the caller opts in. Complements
+    # the prod write-gate (which only covers the prod tenant).
+    if method_u != "GET" and not allow_write:
+        last_segment = path.rstrip("/").rsplit("/", 1)[-1].split("?", 1)[0]
+        if is_write_service(last_segment):
+            return {
+                "error": {
+                    "code": "write_guard",
+                    "message": (
+                        f"Path segment {last_segment!r} looks like a write operation. "
+                        "Re-issue with allow_write=True if this is intentional."
+                    ),
+                }
+            }
     async with OwsClient.for_surface(t, s, settings) as client:
         try:
             return await client.request(method_u, path, params=params, json=body, confirm=confirm)
@@ -1282,6 +1301,24 @@ _TQL_TRANSLATE_CHECK_PATH = "/adc-app-ops/web/rest/v1/model-data-management/tqlT
 _TQL_QUERY_PATH = "/adc-app-ops/web/rest/v1/model-data-management/queryByTql"
 
 
+def _service_invoke_path(project_name: str, module_name: str, service_name: str) -> str:
+    """Pick the project-scoped or legacy service-runtime path.
+
+    Legacy services (cmdb_*, shared getters) live at
+    `/adc-service/rest/v1/legacy/services/<service>` with no project/module
+    segment — pass empty project/module to target them.
+
+    NB: this is the `request_string` consumed by the app-ops
+    `/service/test` proxy, which uses the no-`web` `/adc-service/rest/v1/...`
+    mount (NOT the browser-facing `/adc-service/web/rest/v1/...` form). Keep
+    the project-scoped form byte-identical to the previously shipped prod
+    path to avoid a regression.
+    """
+    if project_name and module_name:
+        return f"/adc-service/rest/v1/services/{project_name}/{module_name}/{service_name}"
+    return f"/adc-service/rest/v1/legacy/services/{service_name}"
+
+
 async def invoke_service(
     tenant: str,
     project_name: str,
@@ -1290,6 +1327,7 @@ async def invoke_service(
     payload: dict[str, Any] | None = None,
     *,
     confirm: bool = False,
+    extra_headers: dict[str, str] | None = None,
 ) -> Any:
     """Execute a Service from the Studio service playground with a JSON payload.
 
@@ -1315,7 +1353,13 @@ async def invoke_service(
         payload: JSON body to POST. Pass `{}` (or omit) for services that
             take no input. Mirror the input shape the Studio playground
             shows for that service.
+            Pass empty ``project_name``/``module_name`` to invoke a legacy
+            service (e.g. ``cmdb_site_getList``) at the /legacy/services/ path.
         confirm: required `True` when `tenant == "prod"`.
+        extra_headers: optional headers to merge into the request (e.g.
+            ``x-gde-tenant-id`` / ``Referer`` / ``Origin``) when a specific
+            endpoint rejects the default header set. Do not hardcode a
+            tenant id — it is carried in the session cookie.
 
     Returns:
         Parsed JSON response from the service. On error returns
@@ -1327,19 +1371,22 @@ async def invoke_service(
     try:
         if t == Tenant.PROD:
             # prod: runtime app-ops endpoint — no Studio access needed.
-            service_uri = f"/adc-service/rest/v1/services/{project_name}/{module_name}/{service_name}"
+            service_uri = _service_invoke_path(project_name, module_name, service_name)
             return await _runtime_post(
                 tenant,
                 _SERVICE_TEST_RUNTIME_PATH,
                 json={"request_string": service_uri, "raw_body": body},
                 confirm=confirm,
+                extra_headers=extra_headers,
             )
         else:
             # testbed: Studio playground endpoint.
             studio_path = _SERVICE_TEST_STUDIO_PATH.format(
                 project=project_name, module=module_name, service=service_name
             )
-            return await _studio_post(tenant, studio_path, json=body, confirm=confirm)
+            return await _studio_post(
+                tenant, studio_path, json=body, confirm=confirm, extra_headers=extra_headers
+            )
     except OwsApiError as e:
         return {
             "error": {

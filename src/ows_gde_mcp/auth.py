@@ -77,6 +77,10 @@ class AuthContext:
     """Value of `window.csrfToken` / `localStorage.csrfTokens[].csrfToken`.
     Required for any non-GET request."""
 
+    csrf_header: str = "x-gde-csrf-token"
+    """Header name for the CSRF token. Usually `x-gde-csrf-token`, but the
+    SPA reports it per-tenant as `localStorage.csrfTokens[0].headerKey`."""
+
     src_page: str = "/portal-web/portal/homepage.html"
     """Default `x-gde-src-page` value. Override per-call if the controller
     requires a more specific page (rare in practice)."""
@@ -120,7 +124,7 @@ class AuthContext:
                     "Set OWS_<TENANT>_CSRF_TOKEN or capture window.csrfToken "
                     "from a logged-in browser session."
                 )
-            headers["x-gde-csrf-token"] = self.csrf_token
+            headers[self.csrf_header] = self.csrf_token
         if extra:
             headers.update(extra)
         return headers

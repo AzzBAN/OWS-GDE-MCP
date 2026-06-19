@@ -1,8 +1,0 @@
-{
-  "name": "ows-skills",
-  "version": "1.0.0",
-  "description": "OWS development skills for Claude Code — query model data, analyze pages, debug services, and build new elements.",
-  "author": {
-    "name": "OWS GDE Team"
-  }
-}

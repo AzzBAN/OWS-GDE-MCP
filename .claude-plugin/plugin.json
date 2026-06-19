@@ -1,0 +1,11 @@
+{
+  "name": "ows-gde-mcp",
+  "version": "0.1.0",
+  "description": "OWS / ADC (teleows.com) toolkit for Claude Code: the GDE MCP server (Studio + runtime introspection, model/TQL queries, service invocation), guidance skills, and an evolving Obsidian knowledge vault with curated, end-user-writable findings.",
+  "author": {
+    "name": "OWS GDE Team"
+  },
+  "homepage": "https://github.com/AzzBAN/OWS-GDE-MCP",
+  "repository": "AzzBAN/OWS-GDE-MCP",
+  "license": "Apache-2.0"
+}

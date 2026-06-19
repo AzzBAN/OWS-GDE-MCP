@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --project ${CLAUDE_PLUGIN_ROOT} ows-gde-mcp findings --hook",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

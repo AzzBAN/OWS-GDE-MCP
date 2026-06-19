@@ -17,8 +17,14 @@ from urllib.parse import unquote, urlsplit
 import httpx
 
 from ows_gde_mcp.auth import AuthContext
-from ows_gde_mcp.auth_login import login as _cas_login
-from ows_gde_mcp.auth_login_http import HttpLoginError, http_login as _http_login
+from ows_gde_mcp.auth_login import (
+    fetch_csrf_via_browser as _fetch_csrf_browser,
+)
+from ows_gde_mcp.auth_login import (
+    login as _cas_login,
+)
+from ows_gde_mcp.auth_login_http import HttpLoginError
+from ows_gde_mcp.auth_login_http import http_login as _http_login
 from ows_gde_mcp.config import Settings, Surface, Tenant
 from ows_gde_mcp.hosts import host_of
 
@@ -110,6 +116,17 @@ async def refresh_host_session(base_url: str, tenant: Tenant, settings: Settings
             auth.cookie = cookie
             if csrf:
                 auth.csrf_token = csrf
+        # CSRF often comes only from the browser SPA (localStorage.csrfTokens).
+        # If login gave us a cookie but no CSRF, capture it so non-GET calls
+        # work. Best-effort: skip silently if playwright isn't installed —
+        # GET-only workflows still function.
+        if not auth.csrf_token:
+            try:
+                token, header = await _fetch_csrf_browser(base_url)
+                auth.csrf_token = token
+                auth.csrf_header = header
+            except RuntimeError:
+                pass
         _last_relogin_at[host] = time.monotonic()
 
 
