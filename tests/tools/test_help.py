@@ -20,7 +20,7 @@ from ows_gde_mcp.tools import help as _help
 def fake_vault(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Build a small vault (Home + a finding + a 3-deep Reference tree) + index."""
     vault = tmp_path / "vault"
-    index = tmp_path / "index"
+    index = vault / ".index"  # sidecar index lives inside the vault
     (vault / "00 Findings").mkdir(parents=True)
     (vault / "Reference" / "App Development").mkdir(parents=True)
 
@@ -71,8 +71,7 @@ def fake_vault(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         encoding="utf-8",
     )
 
-    monkeypatch.setattr(_help, "_VAULT_ROOT", vault)
-    monkeypatch.setattr(_help, "_INDEX_ROOT", index)
+    monkeypatch.setenv("OWS_VAULT_DIR", str(vault))
     return vault
 
 
@@ -89,7 +88,7 @@ def test_get_help_home_returns_moc_and_findings(fake_vault: Path) -> None:
 def test_get_help_home_missing_returns_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(_help, "_VAULT_ROOT", tmp_path / "empty")
+    monkeypatch.setenv("OWS_VAULT_DIR", str(tmp_path / "empty"))
     out = _help.get_help_home()
     assert out["error"]["code"] == "no_home"
 
@@ -100,8 +99,7 @@ def test_get_help_home_missing_returns_error(
 def test_list_help_topics_no_cache_returns_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(_help, "_INDEX_ROOT", tmp_path / "missing")
-    monkeypatch.setattr(_help, "_VAULT_ROOT", tmp_path / "missing-vault")
+    monkeypatch.setenv("OWS_VAULT_DIR", str(tmp_path / "empty-vault"))
     out = _help.list_help_topics()
     assert out["error"]["code"] == "no_cache"
     assert "import_help_corpus.py" in out["error"]["message"]
@@ -167,7 +165,7 @@ def test_get_help_topic_not_found(fake_vault: Path) -> None:
 def test_get_help_topic_missing_file(
     fake_vault: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    nav_path = fake_vault.parent / "index" / "en_US" / "nav_index.json"
+    nav_path = fake_vault / ".index" / "en_US" / "nav_index.json"
     nav = json.loads(nav_path.read_text())
     nav.append(
         {"id": 7777, "parent_id": 1, "name": "Ghost", "local": "Reference/ghost.md",
@@ -211,3 +209,47 @@ def test_search_help_no_match(fake_vault: Path) -> None:
     out = _help.search_help("xyzzy_no_such_term")
     assert out["total"] == 0
     assert out["hits"] == []
+
+
+# ---------------- add_help_finding ----------------
+
+
+def test_add_help_finding_creates_and_is_searchable(fake_vault: Path) -> None:
+    out = _help.add_help_finding(
+        "Service Test Endpoint",
+        "The app-ops /service/test proxy takes a no-web request_string.",
+        tags=["services", "prod"],
+    )
+    assert out["ok"] is True
+    assert out["local"] == "00 Findings/Service Test Endpoint.md"
+    written = (fake_vault / out["local"]).read_text()
+    assert written.startswith("---\ntags: [services, prod]\n---\n# Service Test Endpoint")
+    # It now shows up in get_help_home and ranks as a finding in search.
+    assert any(f["name"] == "Service Test Endpoint" for f in _help.get_help_home()["findings"])
+    hit = _help.search_help("request_string")
+    assert hit["hits"][0]["source"] == "finding"
+
+
+def test_add_help_finding_no_overwrite_by_default(fake_vault: Path) -> None:
+    first = _help.add_help_finding("Dup Note", "first body")
+    assert first["ok"] is True
+    again = _help.add_help_finding("Dup Note", "second body")
+    assert again["error"]["code"] == "exists"
+    # overwrite=True replaces it.
+    ow = _help.add_help_finding("Dup Note", "second body", overwrite=True)
+    assert ow["ok"] is True
+    assert "second body" in (fake_vault / ow["local"]).read_text()
+
+
+def test_add_help_finding_requires_title_and_body(fake_vault: Path) -> None:
+    assert _help.add_help_finding("", "body")["error"]["code"] == "bad_input"
+    assert _help.add_help_finding("Title", "")["error"]["code"] == "bad_input"
+
+
+def test_add_help_finding_sanitizes_filename(fake_vault: Path) -> None:
+    out = _help.add_help_finding("../../evil/Name", "body")
+    assert out["ok"] is True
+    # No path escape: the file lands directly in 00 Findings/.
+    assert out["local"].startswith("00 Findings/")
+    assert "/evil/" not in out["local"]
+    assert (fake_vault / out["local"]).exists()

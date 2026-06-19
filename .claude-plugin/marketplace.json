@@ -1,0 +1,17 @@
+{
+  "name": "ows-gde",
+  "description": "OWS / ADC development tooling for Claude Code — MCP server, skills, and an evolving knowledge vault.",
+  "owner": {
+    "name": "OWS GDE Team"
+  },
+  "plugins": [
+    {
+      "name": "ows-gde-mcp",
+      "source": ".",
+      "description": "GDE MCP server (Studio/runtime introspection, model/TQL queries, service invocation) + guidance skills + an evolving Obsidian knowledge vault with end-user-writable findings.",
+      "version": "0.1.0",
+      "category": "productivity",
+      "tags": ["ows", "gde", "adc", "huawei", "mcp", "skills", "knowledge"]
+    }
+  ]
+}

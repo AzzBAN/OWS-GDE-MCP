@@ -78,6 +78,12 @@ class Settings(BaseSettings):
     OWS_PROD_USERNAME: OptionalStr = None
     OWS_PROD_PASSWORD: OptionalStr = None
 
+    # Knowledge vault — where curated findings + the imported Reference corpus
+    # live. The MCP help tools read/write here; findings are user-editable.
+    # Default (when unset): `<cwd>/ows-vault` — per-project. Set an absolute
+    # path to share one vault across projects.
+    OWS_VAULT_DIR: OptionalStr = None
+
     # Production safety gate.
     OWS_PROD_WRITE_ENABLED: bool = False
 

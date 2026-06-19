@@ -5,6 +5,16 @@ description: Decision tree for choosing the right OWS MCP tool. TRIGGER whenever
 
 # OWS MCP Tools Decision Tree
 
+## "How does OWS / ADC do X?" (platform/docs question) → check the vault FIRST
+→ `get_help_home` — the curated Map of Content + linked findings. Read this
+   first; it's the cheapest orientation and points at high-signal findings.
+→ `search_help("<terms>")` — **curated findings rank above** the reference
+   corpus, so a finding short-circuits a full-corpus dive. Then
+   `get_help_topic(<id or local path>)` to read a hit in full.
+→ When you confirm a reusable, non-obvious platform fact, capture it with
+   `add_help_finding(title, body, tags=[...])` (see the `ows-capture-finding`
+   skill) so the next session reads it instead of re-deriving it.
+
 ## Heavy reads → delegate to subagent
 
 If the `Agent` tool is in your toolbox, dispatch a subagent (general-purpose or Explore) for any of these — the big payload stays in the subagent's context, you get back a summary:

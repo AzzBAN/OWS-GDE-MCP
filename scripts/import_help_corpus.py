@@ -27,12 +27,23 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 from pathlib import Path
 
-_REPO_ROOT = Path(__file__).resolve().parents[1]
-_VAULT_ROOT = _REPO_ROOT / "docs" / "help" / "vault"
 _REFERENCE_DIRNAME = "Reference"
+
+
+def _resolve_vault(out_arg: str | None) -> Path:
+    """Vault dir to write into. Mirrors ows_gde_mcp.tools.help._vault_root.
+
+    Resolution: ``--out`` -> ``OWS_VAULT_DIR`` -> ``<cwd>/ows-vault``, so the
+    importer writes exactly where the MCP help tools read.
+    """
+    target = out_arg or os.environ.get("OWS_VAULT_DIR")
+    if target:
+        return Path(target).expanduser()
+    return Path.cwd() / "ows-vault"
 
 
 def _title_of(md: str, fallback: str) -> str:
@@ -128,7 +139,10 @@ def _build_index(vault_root: Path, ref_root: Path) -> tuple[list[dict], list[str
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--vault", required=True, type=Path)
+    ap.add_argument("--vault", required=True, type=Path,
+                    help="Source knowledge-helper vault to import from.")
+    ap.add_argument("--out", default=None, type=str,
+                    help="Destination vault dir (default: OWS_VAULT_DIR or ./ows-vault).")
     ap.add_argument("--lang", default="en_US")
     args = ap.parse_args()
 
@@ -136,12 +150,13 @@ def main() -> int:
     if not src_root.is_dir():
         raise SystemExit(f"vault not found: {src_root}")
 
-    ref_root = _VAULT_ROOT / _REFERENCE_DIRNAME
-    index_dir = _REPO_ROOT / "docs" / "help" / "index" / args.lang
+    vault_root = _resolve_vault(args.out)
+    ref_root = vault_root / _REFERENCE_DIRNAME
+    index_dir = vault_root / ".index" / args.lang
     index_dir.mkdir(parents=True, exist_ok=True)
 
     _copy_reference(src_root, ref_root)
-    nav, jsonl = _build_index(_VAULT_ROOT, ref_root)
+    nav, jsonl = _build_index(vault_root, ref_root)
 
     (index_dir / "nav_index.json").write_text(json.dumps(nav, indent=2), encoding="utf-8")
     (index_dir / "topics.jsonl").write_text("\n".join(jsonl) + "\n", encoding="utf-8")

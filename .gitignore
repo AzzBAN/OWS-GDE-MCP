@@ -41,17 +41,25 @@ docs/discovery/**/sample-apps/
 *.gpk
 *.gpk.zip
 
-# OWS knowledge vault — AUTO-GENERATED parts are regenerable, not committed:
-#   - the legacy flat HTML cache (scripts/fetch_help_docs.py)
-#   - the imported Reference corpus + its sidecar search index
-#     (scripts/import_help_corpus.py)
-# The CURATED parts (docs/help/vault/Home.md, docs/help/vault/00 Findings/**)
-# are git-tracked and intentionally NOT ignored.
+# OWS knowledge vault — the per-project default is ./ows-vault (override with
+# OWS_VAULT_DIR). AUTO-GENERATED parts are regenerable and NOT committed:
+#   - Reference/   : imported OWS help corpus (scripts/import_help_corpus.py)
+#   - .index/      : sidecar search index
+#   - .obsidian/   : Obsidian workspace state
+# The CURATED parts (ows-vault/Home.md, ows-vault/00 Findings/**) ARE tracked.
+ows-vault/Reference/
+ows-vault/.index/
+ows-vault/.obsidian/
+# Legacy flat HTML cache from scripts/fetch_help_docs.py.
 docs/help/en_US/
-docs/help/vault/Reference/
-docs/help/vault/.obsidian/
-docs/help/index/
 !docs/help/.gitkeep
+
+# Per-project finding vaults created by installed plugins elsewhere are the
+# user's to manage; this only governs THIS repo's ows-vault.
+
+# Skill runtime scratch — downloaded attachments / OCR temp. May contain
+# customer data; never commit.
+**/tmp_attachments/
 
 # Playwright MCP per-session artifacts (snapshots, console logs).
 .playwright-mcp/

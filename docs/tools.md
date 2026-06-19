@@ -1,6 +1,6 @@
 # Tools — `ows-gde-mcp`
 
-Auto-generated from the FastMCP server. **54 tools total.**
+Auto-generated from the FastMCP server. **55 tools total.**
 
 Regenerate with `uv run python scripts/gen_tools_md.py`.
 
@@ -15,6 +15,10 @@ Report MCP server status & which (tenant, surface) cells have URLs/secrets confi
 Return the logged-in user profile for the given tenant.
 
 ## Live OWS (require `OWS_<TENANT>_SESSION_COOKIE`)
+
+### `add_help_finding(title: string, body: string, tags?: list[string] | null, overwrite?: boolean = False)`
+
+Create or update a curated finding in the vault's `00 Findings/` folder.
 
 ### `audit_artifact_usage(tenant: string, project_name: string, module_name: string, artifact_type?: string = 'service', search_project?: string | null, search_module?: string | null, include_runtime?: boolean = True, runtime_tenant?: string | null, runtime_since_ms?: integer | null, runtime_until_ms?: integer | null, include_used?: boolean = False, start?: integer = 0, limit?: integer = 0)`
 

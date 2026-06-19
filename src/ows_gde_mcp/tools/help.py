@@ -29,15 +29,13 @@ a structured `error.no_cache` telling the caller how to populate it.
 from __future__ import annotations
 
 import json
+import os
 import re
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
-# Repo-root-relative locations. The importer writes here; these tools read here.
-_REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
-_VAULT_ROOT = _REPO_ROOT / "docs" / "help" / "vault"
-_INDEX_ROOT = _REPO_ROOT / "docs" / "help" / "index"
+from ows_gde_mcp.config import settings as _settings
 
 # Curated, git-tracked parts of the vault.
 _FINDINGS_DIR = "00 Findings"
@@ -47,12 +45,32 @@ _HOME_FILE = "Home.md"
 _DEFAULT_LANG = "en_US"
 
 
+def _vault_root() -> Path:
+    """Resolve the knowledge-vault directory (writable, per-project by default).
+
+    Resolution order:
+      1. ``OWS_VAULT_DIR`` — from `.env` (Settings) or the environment.
+      2. ``<cwd>/ows-vault`` — per-project default.
+
+    Resolved per call so the location can change at runtime and so the env var
+    (set by the plugin, the user's shell, or a test) always wins. Findings the
+    end user adds live here; the importer writes ``Reference/`` and the search
+    index here too.
+    """
+    # Live env wins (plugin / shell / test override); then .env via Settings.
+    configured = os.environ.get("OWS_VAULT_DIR") or _settings.OWS_VAULT_DIR
+    if configured:
+        return Path(configured).expanduser()
+    return Path.cwd() / "ows-vault"
+
+
 def _index_dir(lang: str = _DEFAULT_LANG) -> Path:
-    return _INDEX_ROOT / lang
+    # Hidden, gitignored sidecar search index inside the vault dir.
+    return _vault_root() / ".index" / lang
 
 
 def _findings_dir() -> Path:
-    return _VAULT_ROOT / _FINDINGS_DIR
+    return _vault_root() / _FINDINGS_DIR
 
 
 def _no_cache_error(lang: str) -> dict[str, Any]:
@@ -191,7 +209,7 @@ def get_help_home(*, lang: str = _DEFAULT_LANG) -> dict[str, Any]:
         `{"title", "text", "local", "findings": [{name, local}]}` or
         `{"error": {"code": "no_home", ...}}` if the vault hasn't been set up.
     """
-    home = _VAULT_ROOT / _HOME_FILE
+    home = _vault_root() / _HOME_FILE
     if not home.exists():
         return {
             "error": {
@@ -321,7 +339,7 @@ def get_help_topic(
 
     source = "finding" if str(rel).startswith(f"{_FINDINGS_DIR}/") else "reference"
 
-    vault_root = _VAULT_ROOT.resolve()
+    vault_root = _vault_root().resolve()
     file_path = (vault_root / rel).resolve()
     # Confinement: never read outside the vault, whatever `rel` claims.
     if file_path != vault_root and vault_root not in file_path.parents:
@@ -497,7 +515,80 @@ def _search_jsonl(
     return hits
 
 
+def _slugify(title: str) -> str:
+    """Filesystem-safe finding filename from a title (no path separators)."""
+    slug = re.sub(r"[^A-Za-z0-9 _-]", "", title).strip()
+    slug = re.sub(r"\s+", " ", slug)
+    return slug or "untitled"
+
+
+def add_help_finding(
+    title: str,
+    body: str,
+    *,
+    tags: list[str] | None = None,
+    overwrite: bool = False,
+) -> dict[str, Any]:
+    """Create or update a curated finding in the vault's `00 Findings/` folder.
+
+    This is how the knowledge vault evolves: when you confirm a reusable,
+    non-obvious platform fact, capture it as a short finding so future sessions
+    (and other participants) read it first via `get_help_home` / `search_help`.
+
+    Writes `<vault>/00 Findings/<title>.md` with optional YAML front-matter
+    (tags) and a `# <title>` heading. The write is confined to the findings
+    folder. Before adding, prefer checking `search_help(title)` to update an
+    existing finding instead of creating a near-duplicate.
+
+    Args:
+        title: short, specific finding title (also the filename). Required.
+        body: the finding content (markdown). Keep it terse and
+            production-confirmed. Required.
+        tags: optional list of tags for the front-matter.
+        overwrite: if a finding with this title exists, replace it. Default
+            False returns an `exists` error so you don't clobber by accident.
+
+    Returns:
+        `{"ok": True, "local", "path", "title"}` on success, or
+        `{"error": {...}}` (codes: `bad_input`, `exists`).
+    """
+    if not title or not title.strip():
+        return {"error": {"code": "bad_input", "message": "title is required."}}
+    if not body or not body.strip():
+        return {"error": {"code": "bad_input", "message": "body is required."}}
+
+    fdir = _findings_dir()
+    fdir.mkdir(parents=True, exist_ok=True)
+    slug = _slugify(title)
+    path = (fdir / f"{slug}.md").resolve()
+    if fdir.resolve() not in path.parents:
+        return {"error": {"code": "bad_input", "message": f"Invalid title {title!r}."}}
+    if path.exists() and not overwrite:
+        return {
+            "error": {
+                "code": "exists",
+                "message": (
+                    f"A finding '{slug}.md' already exists. Re-issue with "
+                    "overwrite=True to replace it, or choose a different title."
+                ),
+                "local": f"{_FINDINGS_DIR}/{path.name}",
+            }
+        }
+
+    tag_list = tags or []
+    front = "---\ntags: [" + ", ".join(tag_list) + "]\n---\n" if tag_list else ""
+    content = f"{front}# {title.strip()}\n\n{body.strip()}\n"
+    path.write_text(content, encoding="utf-8")
+    return {
+        "ok": True,
+        "local": f"{_FINDINGS_DIR}/{path.name}",
+        "path": str(path),
+        "title": title.strip(),
+    }
+
+
 __all__ = [
+    "add_help_finding",
     "get_help_home",
     "get_help_topic",
     "list_help_topics",
