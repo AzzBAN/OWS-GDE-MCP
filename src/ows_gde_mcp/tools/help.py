@@ -110,9 +110,8 @@ class _TopicTextExtractor(HTMLParser):
             self._link_target = attrs_d.get("href")
 
     def handle_endtag(self, tag: str) -> None:
-        if tag == "script" or tag == "style":
-            if self._suppress > 0:
-                self._suppress -= 1
+        if (tag == "script" or tag == "style") and self._suppress > 0:
+            self._suppress -= 1
         if tag == "h1":
             self._in_title = False
         if tag == "div" and self._in_parentlink:
@@ -264,8 +263,15 @@ def get_help_topic(
                 ),
             }
         }
-    html = file_path.read_text(encoding="utf-8")
-    title, text, parent = _extract_topic_body(html)
+    raw = file_path.read_text(encoding="utf-8")
+    if str(row["local"]).endswith(".md"):
+        # Markdown corpus (imported from knowledge-helper): the body is
+        # already plain text. Title = first ATX heading or the nav name.
+        lines = raw.splitlines()
+        md_title = next((ln[2:].strip() for ln in lines if ln.startswith("# ")), None)
+        title, text, parent = md_title, raw, None
+    else:
+        title, text, parent = _extract_topic_body(raw)
 
     # Breadcrumb path from root to this topic.
     breadcrumbs: list[dict[str, Any]] = []
@@ -285,7 +291,7 @@ def get_help_topic(
         "lang": lang,
     }
     if include_html:
-        out["html"] = html
+        out["html"] = raw
     return out
 
 

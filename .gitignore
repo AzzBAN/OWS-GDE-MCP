@@ -45,6 +45,8 @@ docs/discovery/**/sample-apps/
 # 50+ MB of static documentation HTML; not source-controlled.
 docs/help/**/*.html
 docs/help/**/*.json
+docs/help/**/*.md
+docs/help/**/*.jsonl
 docs/help/**/figure/
 docs/help/**/public_sys-resources/
 !docs/help/.gitkeep
