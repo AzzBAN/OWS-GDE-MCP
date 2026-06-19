@@ -24,6 +24,7 @@ from typing import Any
 
 from ows_gde_mcp.client import OwsApiError, OwsClient
 from ows_gde_mcp.config import Surface, Tenant, settings
+from ows_gde_mcp.service_guard import is_write_service
 
 # Page-tree fields whose values typically hold a service reference.
 # Matches the prop conventions documented on `get_page_detail` itself.
@@ -237,6 +238,7 @@ async def call_ows_api(
     body: Any = None,
     params: dict[str, Any] | None = None,
     confirm: bool = False,
+    allow_write: bool = False,
 ) -> Any:
     """Generic escape hatch — call any OWS endpoint that we haven't yet
     wrapped with a typed tool.
@@ -257,6 +259,8 @@ async def call_ows_api(
         body: optional JSON body (for POST/PUT/etc.).
         params: optional query-string parameters.
         confirm: required `True` to allow non-GET methods against `prod`.
+        allow_write: set True to bypass the name-based write guard for a
+                path whose final segment matches a write keyword.
 
     Returns:
         Parsed JSON response (or raw text if not JSON).
@@ -264,6 +268,21 @@ async def call_ows_api(
     t = Tenant(tenant)
     s = Surface(surface)
     method_u = method.upper()
+    # Name-based safety net for the generic escape hatch: block obvious
+    # write services on any tenant unless the caller opts in. Complements
+    # the prod write-gate (which only covers the prod tenant).
+    if method_u != "GET" and not allow_write:
+        last_segment = path.rstrip("/").rsplit("/", 1)[-1].split("?", 1)[0]
+        if is_write_service(last_segment):
+            return {
+                "error": {
+                    "code": "write_guard",
+                    "message": (
+                        f"Path segment {last_segment!r} looks like a write operation. "
+                        "Re-issue with allow_write=True if this is intentional."
+                    ),
+                }
+            }
     async with OwsClient.for_surface(t, s, settings) as client:
         try:
             return await client.request(method_u, path, params=params, json=body, confirm=confirm)
