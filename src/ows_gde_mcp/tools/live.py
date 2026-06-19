@@ -1301,6 +1301,24 @@ _TQL_TRANSLATE_CHECK_PATH = "/adc-app-ops/web/rest/v1/model-data-management/tqlT
 _TQL_QUERY_PATH = "/adc-app-ops/web/rest/v1/model-data-management/queryByTql"
 
 
+def _service_invoke_path(project_name: str, module_name: str, service_name: str) -> str:
+    """Pick the project-scoped or legacy service-runtime path.
+
+    Legacy services (cmdb_*, shared getters) live at
+    `/adc-service/rest/v1/legacy/services/<service>` with no project/module
+    segment — pass empty project/module to target them.
+
+    NB: this is the `request_string` consumed by the app-ops
+    `/service/test` proxy, which uses the no-`web` `/adc-service/rest/v1/...`
+    mount (NOT the browser-facing `/adc-service/web/rest/v1/...` form). Keep
+    the project-scoped form byte-identical to the previously shipped prod
+    path to avoid a regression.
+    """
+    if project_name and module_name:
+        return f"/adc-service/rest/v1/services/{project_name}/{module_name}/{service_name}"
+    return f"/adc-service/rest/v1/legacy/services/{service_name}"
+
+
 async def invoke_service(
     tenant: str,
     project_name: str,
@@ -1309,6 +1327,7 @@ async def invoke_service(
     payload: dict[str, Any] | None = None,
     *,
     confirm: bool = False,
+    extra_headers: dict[str, str] | None = None,
 ) -> Any:
     """Execute a Service from the Studio service playground with a JSON payload.
 
@@ -1334,7 +1353,13 @@ async def invoke_service(
         payload: JSON body to POST. Pass `{}` (or omit) for services that
             take no input. Mirror the input shape the Studio playground
             shows for that service.
+            Pass empty ``project_name``/``module_name`` to invoke a legacy
+            service (e.g. ``cmdb_site_getList``) at the /legacy/services/ path.
         confirm: required `True` when `tenant == "prod"`.
+        extra_headers: optional headers to merge into the request (e.g.
+            ``x-gde-tenant-id`` / ``Referer`` / ``Origin``) when a specific
+            endpoint rejects the default header set. Do not hardcode a
+            tenant id — it is carried in the session cookie.
 
     Returns:
         Parsed JSON response from the service. On error returns
@@ -1346,19 +1371,22 @@ async def invoke_service(
     try:
         if t == Tenant.PROD:
             # prod: runtime app-ops endpoint — no Studio access needed.
-            service_uri = f"/adc-service/rest/v1/services/{project_name}/{module_name}/{service_name}"
+            service_uri = _service_invoke_path(project_name, module_name, service_name)
             return await _runtime_post(
                 tenant,
                 _SERVICE_TEST_RUNTIME_PATH,
                 json={"request_string": service_uri, "raw_body": body},
                 confirm=confirm,
+                extra_headers=extra_headers,
             )
         else:
             # testbed: Studio playground endpoint.
             studio_path = _SERVICE_TEST_STUDIO_PATH.format(
                 project=project_name, module=module_name, service=service_name
             )
-            return await _studio_post(tenant, studio_path, json=body, confirm=confirm)
+            return await _studio_post(
+                tenant, studio_path, json=body, confirm=confirm, extra_headers=extra_headers
+            )
     except OwsApiError as e:
         return {
             "error": {
