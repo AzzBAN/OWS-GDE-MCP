@@ -31,10 +31,10 @@ def rsa_oaep_encrypt(plaintext: str, public_key_pem: str) -> str:
 
     Mirrors the browser's WebCrypto `encrypt({name:'RSA-OAEP'}, key, ...)`
     where the key was imported with hash 'SHA-256'. `public_key_pem` may
-    contain literal `\\n` sequences (as embedded in the login page JS); they
-    are normalised to real newlines before parsing.
+    contain literal `\\n` sequences and JS/JSON-escaped `\\/` forward slashes
+    (as embedded in the login page JS); both are unescaped before parsing.
     """
-    pem = public_key_pem.replace("\\n", "\n").strip()
+    pem = public_key_pem.replace("\\/", "/").replace("\\n", "\n").strip()
     key = serialization.load_pem_public_key(pem.encode())
     ciphertext = key.encrypt(
         plaintext.encode("utf-8"),
@@ -57,7 +57,7 @@ class LoginPage:
     """The three hidden values scraped from GET /dspcas/login."""
 
     execution: str
-    rsa_pub_pem: str       # PEM, real newlines (literal \n already normalised)
+    rsa_pub_pem: str       # PEM, real newlines + '/' (literal \n and \/ normalised)
     rsa_pub_version: str
 
 
@@ -78,7 +78,7 @@ def parse_login_page(html: str) -> LoginPage:
         )
     return LoginPage(
         execution=exec_m.group(1),
-        rsa_pub_pem=pub_m.group(1).replace("\\n", "\n"),
+        rsa_pub_pem=pub_m.group(1).replace("\\/", "/").replace("\\n", "\n"),
         rsa_pub_version=ver_m.group(1) if ver_m else "",
     )
 

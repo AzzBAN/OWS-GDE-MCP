@@ -47,7 +47,46 @@ def test_rsa_oaep_encrypt_accepts_pem_with_escaped_newlines():
     assert plaintext.decode() == "secret"
 
 
+def test_rsa_oaep_encrypt_accepts_pem_with_escaped_forward_slashes():
+    # The live CAS login page escapes the base64 body's '/' as '\\/' and
+    # newlines as '\\n' (JS/JSON string escaping). Both must be unescaped or
+    # the PEM parser chokes with InvalidByte on the stray backslash.
+    import pytest
+
+    for _ in range(20):
+        pub_pem, priv = _keypair_pem()
+        if "/" in pub_pem:
+            break
+    else:  # pragma: no cover - astronomically unlikely
+        pytest.skip("no '/' in generated key base64 to exercise the escape path")
+    escaped = pub_pem.replace("/", "\\/").replace("\n", "\\n")
+    assert "\\/" in escaped
+    ciphertext_b64 = rsa_oaep_encrypt("secret", escaped)
+    plaintext = priv.decrypt(
+        base64.b64decode(ciphertext_b64),
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None,
+        ),
+    )
+    assert plaintext.decode() == "secret"
+
+
 from ows_gde_mcp.auth_login_http import parse_login_page
+
+
+def test_parse_login_page_unescapes_forward_slashes():
+    # Mirrors the live page: base64 '/' escaped as '\\/', newlines as '\\n'.
+    html = (
+        '<input name="execution" value="EXEC"/>'
+        '<script>var rsaPubBase64Str = '
+        '"-----BEGIN PUBLIC KEY-----\\nMIIBmA\\/6Q\\/g\\n-----END PUBLIC KEY-----";'
+        ' var rsaPubVersion = "1";</script>'
+    )
+    parsed = parse_login_page(html)
+    assert "\\/" not in parsed.rsa_pub_pem
+    assert "MIIBmA/6Q/g" in parsed.rsa_pub_pem
 
 _LOGIN_HTML = '''
 <form id="submitForm" method="post" onsubmit="return checkSubmit()">
