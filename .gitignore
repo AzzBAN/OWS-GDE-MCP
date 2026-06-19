@@ -41,14 +41,16 @@ docs/discovery/**/sample-apps/
 *.gpk
 *.gpk.zip
 
-# Local OWS help corpus cache — populated by `scripts/fetch_help_docs.py`.
-# 50+ MB of static documentation HTML; not source-controlled.
-docs/help/**/*.html
-docs/help/**/*.json
-docs/help/**/*.md
-docs/help/**/*.jsonl
-docs/help/**/figure/
-docs/help/**/public_sys-resources/
+# OWS knowledge vault — AUTO-GENERATED parts are regenerable, not committed:
+#   - the legacy flat HTML cache (scripts/fetch_help_docs.py)
+#   - the imported Reference corpus + its sidecar search index
+#     (scripts/import_help_corpus.py)
+# The CURATED parts (docs/help/vault/Home.md, docs/help/vault/00 Findings/**)
+# are git-tracked and intentionally NOT ignored.
+docs/help/en_US/
+docs/help/vault/Reference/
+docs/help/vault/.obsidian/
+docs/help/index/
 !docs/help/.gitkeep
 
 # Playwright MCP per-session artifacts (snapshots, console logs).

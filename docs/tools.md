@@ -1,6 +1,6 @@
 # Tools — `ows-gde-mcp`
 
-Auto-generated from the FastMCP server. **50 tools total.**
+Auto-generated from the FastMCP server. **54 tools total.**
 
 Regenerate with `uv run python scripts/gen_tools_md.py`.
 
@@ -20,7 +20,7 @@ Return the logged-in user profile for the given tenant.
 
 Audit usage of every artifact of `artifact_type` in (project, module).
 
-### `call_ows_api(tenant: string, method: string, path: string, surface?: string = 'runtime', body?: ?, params?: dict | null, confirm?: boolean = False)`
+### `call_ows_api(tenant: string, method: string, path: string, surface?: string = 'runtime', body?: ?, params?: dict | null, confirm?: boolean = False, allow_write?: boolean = False)`
 
 Generic escape hatch — call any OWS endpoint that we haven't yet
 
@@ -31,6 +31,10 @@ Quick "is this service used?" answer.
 ### `diff_service_io(tenant: string, caller_project: string, caller_module: string, caller_service: string, callee_project: string, callee_module: string, callee_service: string)`
 
 Compare a caller's `InvokeService` payload to the callee's input schema.
+
+### `download_file_attachment(tenant: string, token: string, file_name: string, save_dir?: string = 'tmp_attachments', save_as?: string | null)`
+
+Download one file by `file_name` + `mateinfo-file-token` and save to disk.
 
 ### `find_artifact_references(tenant: string, target_uri: string, search_project?: string | null, search_module?: string | null, from_package?: string | null, with_excerpts?: boolean = False)`
 
@@ -44,21 +48,29 @@ List artifacts of `artifact_type` in (project, module) with zero references.
 
 Return the current user's pinned/favorite menu entries.
 
-### `get_help_topic(topic: integer | string, lang?: string = 'en_US', include_html?: boolean = False)`
+### `get_help_home(lang?: string = 'en_US')`
 
-Fetch one topic from the local help cache.
+Return the knowledge-vault home page (the MOC top node).
+
+### `get_help_topic(topic: integer | string, lang?: string = 'en_US', include_raw?: boolean = False)`
+
+Fetch one topic or finding from the local vault.
 
 ### `get_log_trace(tenant: string, trace_id: string, start_ms?: integer | null, end_ms?: integer | null, page_size?: integer = 200, content_preview_chars?: integer = 200)`
 
 Fetch every log entry sharing a `trace_id` — the cross-service trace tree.
 
-### `get_model(tenant: string, model_id: integer, properties_only?: boolean = False)`
+### `get_model(tenant: string, model_id: integer, properties_only?: boolean = False, confirm?: boolean = False)`
 
-Fetch a Data Model's full schema by id (every property + restrictions).
+Fetch a Data Model's full schema by Studio model id.
 
 ### `get_model_fields(tenant: string, asset_uri: string)`
 
 Return the TQL queryable-field schema for a Model asset.
+
+### `get_model_schema(tenant: string, project_name: string, module_name: string, model_name?: string, confirm?: boolean = False)`
+
+Fetch full model schema(s) from Studio by name — no numeric ID needed.
 
 ### `get_page(tenant: string, project_name: string, module_name: string, page_name: string, page_type?: string = 'responsive-web')`
 
@@ -76,11 +88,11 @@ Fetch the JS (and optionally CSS) scripts wired to a page.
 
 Get one BPM process definition by (project, module, process_key).
 
-### `get_service(tenant: string, project_name: string, module_name: string, service_name: string, flow_only?: boolean = False)`
+### `get_service(tenant: string, project_name: string, module_name: string, service_name: string, flow_only?: boolean = False, confirm?: boolean = False)`
 
 Fetch one Service's full definition (including its `flow` steps).
 
-### `get_service_script(tenant: string, project_name: string, module_name: string, script_name: string, script_type?: string)`
+### `get_service_script(tenant: string, project_name: string, module_name: string, script_name: string, script_type?: string, confirm?: boolean = False)`
 
 Fetch a service script's full JS body and metadata.
 
@@ -96,7 +108,7 @@ Get one Studio project by id or by name.
 
 Fetch one Trigger by name.
 
-### `invoke_service(tenant: string, project_name: string, module_name: string, service_name: string, payload?: dict | null, confirm?: boolean = False)`
+### `invoke_service(tenant: string, project_name: string, module_name: string, service_name: string, payload?: dict | null, confirm?: boolean = False, extra_headers?: dict | null)`
 
 Execute a Service from the Studio service playground with a JSON payload.
 
@@ -104,9 +116,13 @@ Execute a Service from the Studio service playground with a JSON payload.
 
 Static analysis of a RunScript body for known anti-patterns.
 
+### `list_file_attachments(tenant: string, token: string)`
+
+List the files attached to a `mateinfo-file-token`.
+
 ### `list_help_topics(query?: string, parent_id?: integer | null, depth_max?: integer | null, lang?: string = 'en_US', limit?: integer = 50)`
 
-List topics from the local OWS help corpus.
+List topics from the Reference corpus nav index.
 
 ### `list_live_apps(tenant: string)`
 
@@ -140,11 +156,11 @@ List modules inside a Studio project.
 
 List MCP Scripts (the `Script` tab under Studio's MCP element group).
 
-### `list_service_scripts(tenant: string, project_name: string, module_name: string, script_type?: string, script_name?: string, start?: integer = 0, limit?: integer = 100)`
+### `list_service_scripts(tenant: string, project_name: string, module_name: string, script_type?: string, script_name?: string, start?: integer = 0, limit?: integer = 100, confirm?: boolean = False)`
 
 List the bundled scripts (RunScript, ScriptLib, Translator, Validator) in a module.
 
-### `list_services(tenant: string, project_name: string, module_name: string, service_name?: string, start?: integer = 0, limit?: integer = 50, include_flow?: boolean = False)`
+### `list_services(tenant: string, project_name: string, module_name: string, service_name?: string, start?: integer = 0, limit?: integer = 50, include_flow?: boolean = False, confirm?: boolean = False)`
 
 List Services declared in a Studio project module.
 
@@ -156,7 +172,7 @@ Catalogue every Studio artifact "element type" (~80 types).
 
 List recently-viewed Studio projects with full metadata.
 
-### `list_triggers(tenant: string, project_name: string, module_name: string, trigger_name?: string, active?: boolean | null = True, start?: integer = 0, limit?: integer = 50, verbose?: boolean = False)`
+### `list_triggers(tenant: string, project_name: string, module_name: string, trigger_name?: string, active?: boolean | null = True, start?: integer = 0, limit?: integer = 50, verbose?: boolean = False, confirm?: boolean = False)`
 
 List Triggers declared in a Studio project module.
 
@@ -178,7 +194,7 @@ Map a ticket prefix (INC / BOT / CIT / TTS / ...) to its process.
 
 ### `search_help(query: string, lang?: string = 'en_US', limit?: integer = 20, snippet_chars?: integer = 240)`
 
-Full-text search across the local help corpus.
+Full-text search the vault, **findings first**.
 
 ### `search_service_logs(tenant: string, project_name?: string, module_name?: string, service_name?: string, trace_id?: string, log_level?: string, start_ms?: integer | null, end_ms?: integer | null, page?: integer = 1, page_size?: integer = 50, case_sensitive?: boolean = True, content_preview_chars?: integer = 200)`
 

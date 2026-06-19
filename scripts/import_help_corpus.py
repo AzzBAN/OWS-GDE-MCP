@@ -1,10 +1,21 @@
-"""Import the knowledge-helper Markdown vault into the MCP help corpus.
+"""Import the knowledge-helper Markdown vault into the MCP knowledge vault.
 
-Reads the scraped docs from a knowledge-helper `vault/` directory and emits
-the shapes `ows_gde_mcp.tools.help` consumes:
-  docs/help/<lang>/nav_index.json   flat [{id, parent_id, name, local, depth, path}]
-  docs/help/<lang>/<local>.md       topic bodies (copied verbatim)
-  docs/help/<lang>/topics.jsonl     [{id, name, local, title, text}] for fast search
+Copies the scraped docs from a knowledge-helper `vault/` directory **verbatim**
+into an Obsidian-standard Reference tree, and builds a flat sidecar search
+index the MCP help tools read:
+
+  docs/help/vault/Reference/<nav tree>/*.md   topic bodies, folders preserved
+  docs/help/index/<lang>/nav_index.json       flat [{id, parent_id, name, local,
+                                                     depth, path, is_folder}]
+  docs/help/index/<lang>/topics.jsonl         [{id, name, local, title, text}]
+
+It NEVER touches the curated, git-tracked parts of the vault
+(`docs/help/vault/Home.md`, `docs/help/vault/00 Findings/`). Re-running it
+fully regenerates only `Reference/` and the index.
+
+`local` paths in the index are POSIX-relative to the vault root (e.g.
+`Reference/Low-Code Orchestration/API Reference/X.md`), so the help tools
+resolve them under `docs/help/vault/`.
 
 Usage:
   uv run python scripts/import_help_corpus.py \
@@ -15,40 +26,104 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
-import re
 import shutil
 from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
-
-# Most filesystems cap a single path component at 255 bytes. Keep flattened
-# slugs comfortably under that, leaving room for the ".md" suffix and a short
-# disambiguating hash when we have to truncate.
-_MAX_SLUG_LEN = 200
-
-
-def _slug_to_local(rel: Path) -> str:
-    """Stable filename for a vault topic (path-flattened, .md kept).
-
-    Vault paths can flatten to names that exceed the filesystem's 255-byte
-    component limit. When that happens we truncate and append a short hash of
-    the full relative path so the name stays stable across runs and unique.
-    """
-    flat = "__".join(rel.with_suffix("").parts)
-    flat = re.sub(r"[^A-Za-z0-9_.\-]", "-", flat)
-    if len(flat) > _MAX_SLUG_LEN:
-        digest = hashlib.sha1(str(rel).encode("utf-8")).hexdigest()[:12]
-        flat = f"{flat[: _MAX_SLUG_LEN - len(digest) - 1]}-{digest}"
-    return f"{flat}.md"
+_VAULT_ROOT = _REPO_ROOT / "docs" / "help" / "vault"
+_REFERENCE_DIRNAME = "Reference"
 
 
 def _title_of(md: str, fallback: str) -> str:
-    for line in md.splitlines():
+    """Title from the first ATX heading, else front-matter `title:`, else fallback."""
+    lines = md.splitlines()
+    for line in lines:
         if line.startswith("# "):
             return line[2:].strip()
+    # gray-matter front matter: `title: "..."` between leading --- fences.
+    if lines and lines[0].strip() == "---":
+        for line in lines[1:]:
+            if line.strip() == "---":
+                break
+            if line.lower().startswith("title:"):
+                return line.split(":", 1)[1].strip().strip("\"'")
     return fallback
+
+
+def _copy_reference(src_root: Path, ref_root: Path) -> None:
+    """Replace `ref_root` with a verbatim copy of `src_root` (minus .obsidian)."""
+    if ref_root.exists():
+        shutil.rmtree(ref_root)
+    shutil.copytree(
+        src_root,
+        ref_root,
+        ignore=shutil.ignore_patterns(".obsidian", ".git", ".DS_Store"),
+    )
+
+
+def _build_index(vault_root: Path, ref_root: Path) -> tuple[list[dict], list[str]]:
+    """Walk the Reference tree, return (nav_index, topics_jsonl_lines).
+
+    Folders and `.md` files both become nav nodes (folders carry `is_folder`)
+    so the hierarchy round-trips; only files get a topics.jsonl entry.
+    """
+    # Deterministic order: the Reference root, then every dir + .md file sorted.
+    entries = [ref_root]
+    entries += sorted(
+        (p for p in ref_root.rglob("*") if p.is_dir() or p.suffix == ".md"),
+        key=lambda p: p.as_posix(),
+    )
+
+    id_map: dict[Path, int] = {}
+    path_map: dict[Path, list[int]] = {}
+    nav: list[dict] = []
+    jsonl: list[str] = []
+
+    for i, entry in enumerate(entries, start=1):
+        id_map[entry] = i
+        rel = entry.relative_to(vault_root)  # e.g. Reference/.../X.md
+        parent_id = id_map.get(entry.parent, 0)
+        path = [*path_map.get(entry.parent, []), i]
+        path_map[entry] = path
+        depth = len(rel.parts) - 1
+
+        if entry.is_dir():
+            name = "Reference" if entry == ref_root else entry.name
+            nav.append(
+                {
+                    "id": i,
+                    "parent_id": parent_id,
+                    "name": name,
+                    "local": rel.as_posix(),
+                    "depth": depth,
+                    "path": path,
+                    "is_folder": True,
+                }
+            )
+            continue
+
+        body = entry.read_text(encoding="utf-8")
+        title = _title_of(body, entry.stem)
+        local = rel.as_posix()
+        nav.append(
+            {
+                "id": i,
+                "parent_id": parent_id,
+                "name": title,
+                "local": local,
+                "depth": depth,
+                "path": path,
+                "is_folder": False,
+            }
+        )
+        jsonl.append(
+            json.dumps(
+                {"id": i, "name": title, "local": local, "title": title, "text": body}
+            )
+        )
+
+    return nav, jsonl
 
 
 def main() -> int:
@@ -61,45 +136,22 @@ def main() -> int:
     if not src_root.is_dir():
         raise SystemExit(f"vault not found: {src_root}")
 
-    out_dir = _REPO_ROOT / "docs" / "help" / args.lang
-    out_dir.mkdir(parents=True, exist_ok=True)
+    ref_root = _VAULT_ROOT / _REFERENCE_DIRNAME
+    index_dir = _REPO_ROOT / "docs" / "help" / "index" / args.lang
+    index_dir.mkdir(parents=True, exist_ok=True)
 
-    md_files = sorted(p for p in src_root.rglob("*.md") if ".obsidian" not in p.parts)
-    nav: list[dict] = []
-    jsonl_lines: list[str] = []
+    _copy_reference(src_root, ref_root)
+    nav, jsonl = _build_index(_VAULT_ROOT, ref_root)
 
-    for i, src in enumerate(md_files, start=1):
-        rel = src.relative_to(src_root)
-        local = _slug_to_local(rel)
-        body = src.read_text(encoding="utf-8")
-        title = _title_of(body, rel.stem)
-        depth = len(rel.parts) - 1
-        shutil.copyfile(src, out_dir / local)
-        nav.append(
-            {
-                "id": i,
-                "parent_id": 0,  # flat import; nav tree is not reconstructed
-                "name": title,
-                "local": local,
-                "depth": depth,
-                "path": [i],
-            }
-        )
-        jsonl_lines.append(
-            json.dumps(
-                {
-                    "id": i,
-                    "name": title,
-                    "local": local,
-                    "title": title,
-                    "text": body,
-                }
-            )
-        )
+    (index_dir / "nav_index.json").write_text(json.dumps(nav, indent=2), encoding="utf-8")
+    (index_dir / "topics.jsonl").write_text("\n".join(jsonl) + "\n", encoding="utf-8")
 
-    (out_dir / "nav_index.json").write_text(json.dumps(nav, indent=2), encoding="utf-8")
-    (out_dir / "topics.jsonl").write_text("\n".join(jsonl_lines) + "\n", encoding="utf-8")
-    print(f"Imported {len(md_files)} topics into {out_dir}")
+    topic_count = len(jsonl)
+    folder_count = len(nav) - topic_count
+    print(
+        f"Imported {topic_count} topics ({folder_count} folders) into {ref_root}\n"
+        f"Index written to {index_dir}"
+    )
     return 0
 
 

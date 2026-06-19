@@ -82,7 +82,10 @@ mcp.tool()(_scripts.list_page_scripts)
 mcp.tool()(_files.list_file_attachments)
 mcp.tool()(_files.download_file_attachment)
 
-# OWS help corpus — local-cache only (populate via `scripts/fetch_help_docs.py`).
+# OWS knowledge vault — local Obsidian vault (populate via
+# `scripts/import_help_corpus.py`). get_help_home returns the curated MOC;
+# search_help ranks curated findings above the reference corpus.
+mcp.tool()(_help.get_help_home)
 mcp.tool()(_help.list_help_topics)
 mcp.tool()(_help.get_help_topic)
 mcp.tool()(_help.search_help)
