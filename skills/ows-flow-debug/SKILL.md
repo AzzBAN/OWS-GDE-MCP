@@ -7,6 +7,24 @@ description: Trace and debug end-to-end flows in OWS — page → service, servi
 
 Use when something in an OWS app is broken or behaving unexpectedly and you need to trace the full call chain to find root cause.
 
+## Quick Start: I have a service error message
+
+If you already have a specific error (stack trace, error code, failed service name), skip the broad flow tracing and go straight:
+
+1. `search_service_logs(service_name=..., log_level="ERROR", content_preview_chars=0)` — find the failing call; use `content_preview_chars=0` for full stack traces.
+2. `get_log_trace(trace_id=...)` — pull the cross-service trace from the error's `trace_id`.
+3. `get_service(..., flow_only=True)` — read the failing service's flow steps.
+4. `get_service_script(...)` — read the RunScript body if the error points at a script step.
+5. `invoke_service(..., payload={...})` — reproduce on testbed (`confirm=True` on prod), mirroring the flow's input schema.
+
+Then resume the full Steps below if the root cause spans callers/callees.
+
+**Common error patterns:**
+- `NullPointerException` in RunScript → input field mapping, a required field is null
+- `TQL compile failed` → field name mismatch, verify with `get_model_fields`
+- `403 / permission denied` → service `open_level` mismatch or missing role
+- `timeout` → downstream service slow, check `duration_ms` across the trace
+
 ## Delegate to a subagent when possible
 
 This skill walks call chains across pages, services, scripts, and logs — the payloads add up fast and a single trace can blow past the 32MB context limit. If the `Agent` tool is available, dispatch the trace to a subagent (general-purpose):

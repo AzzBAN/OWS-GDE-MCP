@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ows_gde": {
+      "command": "uv",
+      "args": ["run", "--project", "/Users/azhar/Documents/Huawei/OWS_MCP", "ows-gde-mcp", "serve", "--no-prewarm"]
+    }
+  }
+}
