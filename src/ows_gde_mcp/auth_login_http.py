@@ -145,11 +145,26 @@ def host_only(base_url: str) -> str:
     return host_of(base_url)
 
 
-async def _fetch_csrf(client: httpx.AsyncClient) -> str | None:
-    """Best-effort CSRF fetch. Returns None if unavailable (GET reads don't need it).
+_UICONFIG_PATH = "/portal/web/rest/v1/uiconfig/info"
 
-    OPEN QUESTION (spec section 7.1): confirm the REST endpoint the SPA uses to
-    mint `window.csrfToken`. Until verified, return None — non-GET prod-studio
-    calls will trigger the Playwright path which captures CSRF reliably.
+
+async def _fetch_csrf(client: httpx.AsyncClient) -> str | None:
+    """Fetch the CSRF token via the SPA's uiconfig endpoint.
+
+    GET /portal/web/rest/v1/uiconfig/info returns JSON with a `csrf_token`
+    field — the same 48-digit token the SPA stores in `localStorage.csrfTokens`
+    (the SPA's `getADCCsrfUrl()` builds this path from the constant
+    `"/web/rest/v1/uiconfig/info"` + portal prefix). Verified on both testbed
+    and prod. Best-effort: returns None on any failure so the caller falls back
+    to the `OWS_<TENANT>_CSRF_TOKEN` env var or the Playwright path.
     """
-    return None
+    try:
+        resp = await client.get(
+            _UICONFIG_PATH,
+            headers={"X-Requested-With": "XMLHttpRequest"},
+        )
+        resp.raise_for_status()
+        token = resp.json().get("csrf_token")
+        return token if isinstance(token, str) and token else None
+    except Exception:
+        return None

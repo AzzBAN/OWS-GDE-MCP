@@ -116,10 +116,10 @@ async def refresh_host_session(base_url: str, tenant: Tenant, settings: Settings
             auth.cookie = cookie
             if csrf:
                 auth.csrf_token = csrf
-        # CSRF often comes only from the browser SPA (localStorage.csrfTokens).
-        # If login gave us a cookie but no CSRF, capture it so non-GET calls
-        # work. Best-effort: skip silently if playwright isn't installed —
-        # GET-only workflows still function.
+        # HTTP login mints a CSRF via /portal/web/rest/v1/uiconfig/info. If
+        # that failed (returned None), fall back to the browser SPA capture so
+        # non-GET calls still work. Best-effort: skip silently if playwright
+        # isn't installed — GET-only workflows still function.
         if not auth.csrf_token:
             try:
                 token, header = await _fetch_csrf_browser(base_url)

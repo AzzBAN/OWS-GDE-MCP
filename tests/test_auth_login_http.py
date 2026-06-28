@@ -137,9 +137,15 @@ async def test_http_login_success(httpx_mock):
                             status_code=200, headers={"set-cookie": "PORTAL_SESSION_ID=abc; Path=/"})
     # self-test sso/check -> true
     httpx_mock.add_response(url="https://h.example.com/portal/web/rest/sso/check", json=True)
+    # CSRF mint via uiconfig/info
+    httpx_mock.add_response(
+        url="https://h.example.com/portal/web/rest/v1/uiconfig/info",
+        json={"csrf_token": "996714579683038770742723880417461574458563619363"},
+    )
 
     cookie, csrf = await http_login("https://h.example.com", "user", "pass")
     assert "PORTAL_SESSION_ID=abc" in cookie
+    assert csrf == "996714579683038770742723880417461574458563619363"
 
 
 @pytest.mark.asyncio
@@ -157,3 +163,33 @@ async def test_http_login_failed_selftest_raises(httpx_mock):
 
     with pytest.raises(HttpLoginError):
         await http_login("https://h.example.com", "user", "pass")
+
+
+@pytest.mark.asyncio
+async def test_fetch_csrf_returns_token_from_uiconfig(httpx_mock):
+    # _fetch_csrf GETs /portal/web/rest/v1/uiconfig/info and returns csrf_token.
+    httpx_mock.add_response(
+        url="https://h.example.com/portal/web/rest/v1/uiconfig/info",
+        json={"csrf_token": "996714579683038770742723880417461574458563619363",
+              "user_id": "1", "tenant_id": "1057"},
+    )
+    import httpx
+    from ows_gde_mcp.auth_login_http import _fetch_csrf
+    async with httpx.AsyncClient(base_url="https://h.example.com/") as c:
+        token = await _fetch_csrf(c)
+    assert token == "996714579683038770742723880417461574458563619363"
+
+
+@pytest.mark.asyncio
+async def test_fetch_csrf_returns_none_on_error(httpx_mock):
+    # If uiconfig/info fails, return None (best-effort, never raises).
+    httpx_mock.add_response(
+        url="https://h.example.com/portal/web/rest/v1/uiconfig/info",
+        status_code=500,
+    )
+    import httpx
+    from ows_gde_mcp.auth_login_http import _fetch_csrf
+    async with httpx.AsyncClient(base_url="https://h.example.com/") as c:
+        token = await _fetch_csrf(c)
+    assert token is None
+
