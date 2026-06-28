@@ -10,13 +10,15 @@ def test_package_imports() -> None:
 
 
 def test_config_loads() -> None:
-    from ows_gde_mcp.config import Tenant, settings
+    from ows_gde_mcp.config import Settings, Tenant
 
     assert Tenant.PROD.value == "prod"
     assert Tenant.TESTBED.value == "testbed"
-    # Defaults are safe.
-    assert settings.OWS_PROD_WRITE_ENABLED is False
-    assert settings.OWS_MCP_TRANSPORT == "stdio"
+    # Defaults are safe — build a fresh Settings ignoring any host .env so a
+    # developer's local prod-write flag can't flip this assertion.
+    defaults = Settings(_env_file=None)
+    assert defaults.OWS_PROD_WRITE_ENABLED is False
+    assert defaults.OWS_MCP_TRANSPORT == "stdio"
 
 
 def test_status_tool_smoke() -> None:

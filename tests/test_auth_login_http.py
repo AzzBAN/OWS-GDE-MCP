@@ -18,7 +18,8 @@ def _keypair_pem() -> tuple[str, rsa.RSAPrivateKey]:
 
 def test_rsa_oaep_encrypt_roundtrip():
     pub_pem, priv = _keypair_pem()
-    ciphertext_b64 = rsa_oaep_encrypt("Ajang03212@!", pub_pem)
+    plaintext_in = "test-password-123!"
+    ciphertext_b64 = rsa_oaep_encrypt(plaintext_in, pub_pem)
     # Server decrypts with RSA-OAEP/SHA-256 — confirm our output round-trips.
     plaintext = priv.decrypt(
         base64.b64decode(ciphertext_b64),
@@ -28,7 +29,7 @@ def test_rsa_oaep_encrypt_roundtrip():
             label=None,
         ),
     )
-    assert plaintext.decode() == "Ajang03212@!"
+    assert plaintext.decode() == plaintext_in
 
 
 def test_rsa_oaep_encrypt_accepts_pem_with_escaped_newlines():

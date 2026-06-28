@@ -22,18 +22,6 @@ from ows_gde_mcp.client import OwsClient
 from ows_gde_mcp.config import Settings, Surface, Tenant
 
 
-@pytest.fixture(autouse=True)
-def _clear_auth_cache() -> None:
-    """Reset per-process auth state between tests so each starts clean.
-
-    Includes the relogin lock + timestamp dict so the 5-second skip
-    window from a prior test doesn't suppress a fresh test's relogin.
-    """
-    client_mod._auth_cache.clear()
-    client_mod._relogin_locks.clear()
-    client_mod._last_relogin_at.clear()
-
-
 @pytest.fixture
 def fake_settings(monkeypatch: pytest.MonkeyPatch) -> Settings:
     for var in (

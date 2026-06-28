@@ -12,19 +12,10 @@ from __future__ import annotations
 
 import pytest
 
-from ows_gde_mcp import client as client_mod
 from ows_gde_mcp.client import OwsClient
 from ows_gde_mcp.config import Settings, Surface, Tenant
 
 # ---------------- fixtures ----------------
-
-
-@pytest.fixture(autouse=True)
-def _clear_auth_cache() -> None:
-    """Reset per-process auth state between tests so each starts clean."""
-    client_mod._auth_cache.clear()
-    client_mod._relogin_locks.clear()
-    client_mod._last_relogin_at.clear()
 
 
 @pytest.fixture
