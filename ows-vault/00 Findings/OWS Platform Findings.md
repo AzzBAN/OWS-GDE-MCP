@@ -7,14 +7,25 @@ Production-confirmed gotchas for the OWS Studio / ADC platform (`teleows.com`).
 Terse by design — each item is something that cost real debugging time. Add to
 it; keep entries short and confirmed.
 
-## Auth: CSRF token only exists in the browser SPA
+## Auth: CSRF token — REST endpoint exists (uiconfig/info)
 
-Non-GET calls to OWS require a CSRF header. The token is **not** returned by any
-REST endpoint — the SPA bootstrap JS writes it to
-`localStorage.csrfTokens[0].csrfToken`, with the header name in the sibling
-`headerKey` (default `x-gde-csrf-token`). To make POST/PUT/DELETE work you must
-either capture it from a logged-in browser (`localStorage`) or paste it into
-config. A pure-HTTP login does **not** mint it.
+Non-GET calls to OWS require a CSRF header (`x-gde-csrf-token`). The token **IS**
+available from a REST endpoint — contrary to an earlier note:
+
+    GET /portal/web/rest/v1/uiconfig/info
+
+returns JSON `{"csrf_token": "<48-digit>", "user_id": ..., "tenant_id": ...}`.
+Verified on both testbed (1057-sg-studio) and prod (1057-sg). The SPA's
+`getADCCsrfUrl()` (in `chunk-vigour.*.js`) builds this URL from the constant
+`aP="/web/rest/v1/uiconfig/info"` + portal prefix `/portal`; it also caches the
+token in `localStorage.csrfTokens[0].csrfToken` with sibling `headerKey`
+(default `x-gde-csrf-token`).
+
+So a pure-HTTP login mints its own CSRF (`_fetch_csrf` in `auth_login_http.py`) —
+no browser/Playwright needed for the token itself. The header name is fixed
+`x-gde-csrf-token`; the response has no `headerKey` field. The env override
+`OWS_<TENANT>_CSRF_TOKEN` remains the no-network path; Playwright remains the
+fallback only when HTTP login can't clear the CAS tenant/captcha gate.
 
 ## Auth: the CAS login is a Vue SPA with a tenant field + captcha
 
