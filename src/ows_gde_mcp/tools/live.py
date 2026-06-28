@@ -238,7 +238,6 @@ async def call_ows_api(
     body: Any = None,
     params: dict[str, Any] | None = None,
     confirm: bool = False,
-    allow_write: bool = False,
 ) -> Any:
     """Generic escape hatch — call any OWS endpoint that we haven't yet
     wrapped with a typed tool.
@@ -259,8 +258,6 @@ async def call_ows_api(
         body: optional JSON body (for POST/PUT/etc.).
         params: optional query-string parameters.
         confirm: required `True` to allow non-GET methods against `prod`.
-        allow_write: set True to bypass the name-based write guard for a
-                path whose final segment matches a write keyword.
 
     Returns:
         Parsed JSON response (or raw text if not JSON).
@@ -269,9 +266,10 @@ async def call_ows_api(
     s = Surface(surface)
     method_u = method.upper()
     # Name-based safety net for the generic escape hatch: block obvious
-    # write services on any tenant unless the caller opts in. Complements
-    # the prod write-gate (which only covers the prod tenant).
-    if method_u != "GET" and not allow_write:
+    # write services on any tenant. Complements the prod write-gate (which
+    # only covers the prod tenant). Legitimate writes go through the typed
+    # tools or `confirm=True` + `OWS_PROD_WRITE_ENABLED=1` on the prod gate.
+    if method_u != "GET":
         last_segment = path.rstrip("/").rsplit("/", 1)[-1].split("?", 1)[0]
         if is_write_service(last_segment):
             return {
@@ -279,7 +277,7 @@ async def call_ows_api(
                     "code": "write_guard",
                     "message": (
                         f"Path segment {last_segment!r} looks like a write operation. "
-                        "Re-issue with allow_write=True if this is intentional."
+                        "Use the typed tool for this operation, or confirm=True against prod."
                     ),
                 }
             }

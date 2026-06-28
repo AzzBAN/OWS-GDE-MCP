@@ -24,7 +24,7 @@ Create or update a curated finding in the vault's `00 Findings/` folder.
 
 Audit usage of every artifact of `artifact_type` in (project, module).
 
-### `call_ows_api(tenant: string, method: string, path: string, surface?: string = 'runtime', body?: ?, params?: dict | null, confirm?: boolean = False, allow_write?: boolean = False)`
+### `call_ows_api(tenant: string, method: string, path: string, surface?: string = 'runtime', body?: ?, params?: dict | null, confirm?: boolean = False)`
 
 Generic escape hatch — call any OWS endpoint that we haven't yet
 

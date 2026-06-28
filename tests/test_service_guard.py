@@ -48,3 +48,13 @@ def test_call_ows_api_blocks_write_path_without_optin():
         )
     )
     assert out["error"]["code"] == "write_guard"
+
+
+def test_call_ows_api_has_no_allow_write_param():
+    # The per-call allow_write skip was removed (it let LLM-sourced args bypass
+    # the name-based write guard). The guard now always fires on non-GET.
+    import inspect
+
+    sig = inspect.signature(live.call_ows_api)
+    assert "allow_write" not in sig.parameters
+
