@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ows_gde": {
+      "command": "uv",
+      "args": ["run", "--project", ".", "ows-gde-mcp", "serve", "--no-prewarm"]
+    }
+  }
+}

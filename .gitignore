@@ -21,6 +21,9 @@ uv.lock.bak
 *.pem
 *.key
 
+# opencode.json may carry forwarded env secrets — NEVER commit
+opencode.json
+
 # Playwright / discovery
 .playwright-profile/
 playwright-report/
@@ -76,3 +79,7 @@ docs/help/en_US/
 .mypy_cache/
 htmlcov/
 .coverage
+
+# Per-machine MCP server config (use .mcp.json.example as template).
+# The absolute --project path differs per checkout, so keep it local.
+.mcp.json
