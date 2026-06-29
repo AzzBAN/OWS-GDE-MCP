@@ -17,6 +17,7 @@ Auth values + base URLs live in env (or .env). See .env.example.
 from __future__ import annotations
 
 from enum import StrEnum
+from pathlib import Path
 from typing import Annotated
 
 from pydantic import BeforeValidator, HttpUrl
@@ -44,9 +45,26 @@ class Surface(StrEnum):
     RUNTIME = "runtime"
 
 
+def _resolve_env_file() -> str:
+    """Find .env relative to the package, not the launcher's cwd.
+
+    pydantic-settings resolves a relative ``env_file`` against the process
+    cwd, which breaks when the MCP server is launched from another
+    directory (Hermes, Claude Code, a global ``ows-gde-mcp`` entry point).
+    Walk up from this module to find the repo-root ``.env``; fall back to
+    the bare ``".env"`` (legacy cwd-relative behaviour) if not found.
+    """
+    here = Path(__file__).resolve().parent  # src/ows_gde_mcp/
+    for candidate in (here, *here.parents):
+        env_path = candidate / ".env"
+        if env_path.is_file():
+            return str(env_path)
+    return ".env"  # ponytail: falls back to cwd-relative — works when run from repo root
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=_resolve_env_file(),
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,
