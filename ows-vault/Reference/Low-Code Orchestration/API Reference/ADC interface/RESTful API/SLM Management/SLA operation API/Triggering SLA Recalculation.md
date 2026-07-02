@@ -1,0 +1,8 @@
+---
+title: "Triggering SLA Recalculation"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/zh-cn_topic_SlaOperationApiService_recalculatePOST.html"
+depth: 6
+---
+#### Function
+
+This function starts from GDE 24.2 and triggers batch recalculation of tickets or SLA instances. The mode parameter specifies the calculation mode. The value can be order or sla\_instance. The default value is order. When mode is set to order, batch work order recalculation is triggered. The order\_ids parameter cannot be empty. A maximum of 50 work orders are supported. Use commas (,) to separate multiple work orders. If mode is set to sla\_instance, SLA instances will be recalculated in batches. The sla\_instance\_ids parameter cannot be empty. A maximum of 50 SLA instances are supported, which are separated by commas (,). The calculate\_type parameter specifies the calculation method. The value can be default, pause\_resume\_reserved, or calendar\_changed. The default value is default. If calculate\_type is set to default, SLA instances are re-matched and generated based on the latest SLA configuration and calendar. If calculate\_type is set to pause\_resume\_reserved, SLA instances are re-matched and generated based on the latest SLA configuration and calendar, and the suspension and resumption records are retained. When calculate\_type is set to calendar\_changed, the calendar in the SLA configuration associated with the SLA instance is updated, and the target time, target value, consumed time, and remaining time of the SLA instance are recalculated.

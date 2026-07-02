@@ -1,0 +1,34 @@
+---
+title: "Random Sampling"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552560713.html"
+depth: 7
+---
+# Random Sampling
+
+**create\_random\_sample**
+
+**Description:**
+
+Chooses unique random elements from a population set.
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560713__table22429mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560713__row22438mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552560713__row22457mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">population</td><td class="cellrowborder" valign="top" width="16.666666666666664%">String</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Sample library. Supports strings or sequences of strings</td></tr><tr id="EN-US_TOPIC_0000002552560713__row22471mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">sample_size</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">1</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">The number of drawing elements</td></tr><tr id="EN-US_TOPIC_0000002552560713__row22485mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">sep</td><td class="cellrowborder" valign="top" width="16.666666666666664%">String</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Type the joiner of the string</td></tr><tr id="EN-US_TOPIC_0000002552560713__row22499mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560713__table22515mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560713__row22523mcpsimp"><td class="cellrowborder" valign="top" width="20%">name</td><td class="cellrowborder" valign="top" width="20%">type</td><td class="cellrowborder" valign="top" width="20%">default</td><td class="cellrowborder" valign="top" width="20%">range</td><td class="cellrowborder" valign="top" width="20%">help</td></tr><tr id="EN-US_TOPIC_0000002552560713__row22539mcpsimp"><td class="cellrowborder" valign="top" width="20%">return</td><td class="cellrowborder" valign="top" width="20%">string</td><td class="cellrowborder" valign="top" width="20%">random_sample</td><td class="cellrowborder" valign="top" width="20%">-</td><td class="cellrowborder" valign="top" width="20%">A random sample</td></tr></tbody></table>
+
+**samples**
+
+Randomly select two characters from "abcdefg" and join them with the "-" symbol.
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560713__table22554mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560713__row22559mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552560713__row22566mcpsimp"><td class="cellrowborder" valign="top" width="50%">population</td><td class="cellrowborder" valign="top" width="50%">abcdefg</td></tr><tr id="EN-US_TOPIC_0000002552560713__row22572mcpsimp"><td class="cellrowborder" valign="top" width="50%">sample_size</td><td class="cellrowborder" valign="top" width="50%">2</td></tr><tr id="EN-US_TOPIC_0000002552560713__row22578mcpsimp"><td class="cellrowborder" valign="top" width="50%">sep</td><td class="cellrowborder" valign="top" width="50%">-</td></tr></tbody></table>
+
+Randomly select three elements from '\["Johnny","Nickia","hey","hate","hey","like","love"\]' and join them with the "-" symbol.
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560713__table22585mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560713__row22590mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552560713__row22597mcpsimp"><td class="cellrowborder" valign="top" width="50%">population</td><td class="cellrowborder" valign="top" width="50%">["Johnny","Nickia","hey","hate","hey","like","love"]</td></tr><tr id="EN-US_TOPIC_0000002552560713__row22603mcpsimp"><td class="cellrowborder" valign="top" width="50%">sample_size</td><td class="cellrowborder" valign="top" width="50%">3</td></tr><tr id="EN-US_TOPIC_0000002552560713__row22609mcpsimp"><td class="cellrowborder" valign="top" width="50%">sep</td><td class="cellrowborder" valign="top" width="50%">-</td></tr></tbody></table>
+
+**Parent topic:** [[Maths|Maths]]

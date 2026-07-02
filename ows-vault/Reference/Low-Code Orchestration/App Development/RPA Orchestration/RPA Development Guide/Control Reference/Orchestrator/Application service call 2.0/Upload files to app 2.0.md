@@ -1,0 +1,34 @@
+---
+title: "Upload files to app 2.0"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552480747.html"
+depth: 7
+---
+# Upload files to app 2.0
+
+**app2.uploadFile**
+
+**Description:**
+
+Upload files to app 2.0
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480747__table11847mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480747__row11856mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552480747__row11875mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">batch_upload</td><td class="cellrowborder" valign="top" width="16.666666666666664%">list</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">no</td><td class="cellrowborder" valign="top" width="16.666666666666664%">yes|no</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Indicates whether to upload files in batches. If this function is enabled, all files in the first layer of the selected folder will be uploaded. Otherwise, only the selected file will be uploaded.</td></tr><tr id="EN-US_TOPIC_0000002552480747__row11889mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">file-path</td><td class="cellrowborder" valign="top" width="16.666666666666664%">file</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">File path</td></tr><tr id="EN-US_TOPIC_0000002552480747__row11903mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002552480747__row11917mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480747__table11933mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480747__row11941mcpsimp"><td class="cellrowborder" valign="top" width="20%">name</td><td class="cellrowborder" valign="top" width="20%">type</td><td class="cellrowborder" valign="top" width="20%">default</td><td class="cellrowborder" valign="top" width="20%">range</td><td class="cellrowborder" valign="top" width="20%">help</td></tr><tr id="EN-US_TOPIC_0000002552480747__row11957mcpsimp"><td class="cellrowborder" valign="top" width="20%">return</td><td class="cellrowborder" valign="top" width="20%">String</td><td class="cellrowborder" valign="top" width="20%">file_token</td><td class="cellrowborder" valign="top" width="20%">-</td><td class="cellrowborder" valign="top" width="20%">The temporary token value of the file is only used when creating model data. Set the token value to the file type field, not for file download</td></tr></tbody></table>
+
+**Samples**
+
+Upload file to app 2.0
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480747__table11972mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480747__row11977mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552480747__row11984mcpsimp"><td class="cellrowborder" valign="top" width="50%">batch_upload</td><td class="cellrowborder" valign="top" width="50%">no</td></tr><tr id="EN-US_TOPIC_0000002552480747__row11990mcpsimp"><td class="cellrowborder" valign="top" width="50%">file-path</td><td class="cellrowborder" valign="top" width="50%">D:\eSpace_transfer_files\1.txt</td></tr></tbody></table>
+
+Upload file in the eSpace\_transfer\_files Folder to app 2.0
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480747__table11997mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480747__row12002mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552480747__row12009mcpsimp"><td class="cellrowborder" valign="top" width="50%">batch_upload</td><td class="cellrowborder" valign="top" width="50%">yes</td></tr><tr id="EN-US_TOPIC_0000002552480747__row12015mcpsimp"><td class="cellrowborder" valign="top" width="50%">file-path</td><td class="cellrowborder" valign="top" width="50%">D:\eSpace_transfer_files</td></tr></tbody></table>
+
+**Parent topic:** [[Application service call 2.0|Application service call 2.0]]

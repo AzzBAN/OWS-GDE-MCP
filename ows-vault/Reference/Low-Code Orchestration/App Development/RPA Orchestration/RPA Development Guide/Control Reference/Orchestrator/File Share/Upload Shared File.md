@@ -1,0 +1,32 @@
+---
+title: "Upload Shared File"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002521560790.html"
+depth: 7
+---
+# Upload Shared File
+
+**mc.uploadFile**
+
+**Description:**
+
+upload file to shared files in the management center.Files can be uploaded in batches.
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002521560790__table67222mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002521560790__row67231mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002521560790__row67250mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">batch_upload</td><td class="cellrowborder" valign="top" width="16.666666666666664%">list</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">no</td><td class="cellrowborder" valign="top" width="16.666666666666664%">yes|no</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Indicates whether to upload files in batches. If this function is enabled, all files in the first layer of the selected folder will be uploaded. Otherwise, only the selected file will be uploaded.</td></tr><tr id="EN-US_TOPIC_0000002521560790__row67264mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">file-path</td><td class="cellrowborder" valign="top" width="16.666666666666664%">file</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">File path</td></tr><tr id="EN-US_TOPIC_0000002521560790__row67278mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">folder</td><td class="cellrowborder" valign="top" width="16.666666666666664%">string</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Cloud folder name. The maximum size of a shared file in the management center is 50 MB and the maximum size is 10 GB.</td></tr><tr id="EN-US_TOPIC_0000002521560790__row67292mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002521560790__row67306mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output: none**
+
+**Samples**
+
+Upload file
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002521560790__table67325mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002521560790__row67330mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002521560790__row67337mcpsimp"><td class="cellrowborder" valign="top" width="50%">batch_upload</td><td class="cellrowborder" valign="top" width="50%">no</td></tr><tr id="EN-US_TOPIC_0000002521560790__row67343mcpsimp"><td class="cellrowborder" valign="top" width="50%">folder</td><td class="cellrowborder" valign="top" width="50%">test</td></tr><tr id="EN-US_TOPIC_0000002521560790__row67349mcpsimp"><td class="cellrowborder" valign="top" width="50%">file-path</td><td class="cellrowborder" valign="top" width="50%">D:\eSpace_transfer_files\test\1.txt</td></tr></tbody></table>
+
+Upload file in the D:\\eSpace\_transfer\_files\\test Folder
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002521560790__table67356mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002521560790__row67361mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002521560790__row67368mcpsimp"><td class="cellrowborder" valign="top" width="50%">batch_upload</td><td class="cellrowborder" valign="top" width="50%">yes</td></tr><tr id="EN-US_TOPIC_0000002521560790__row67374mcpsimp"><td class="cellrowborder" valign="top" width="50%">folder</td><td class="cellrowborder" valign="top" width="50%">test</td></tr><tr id="EN-US_TOPIC_0000002521560790__row67380mcpsimp"><td class="cellrowborder" valign="top" width="50%">file-path</td><td class="cellrowborder" valign="top" width="50%">D:\eSpace_transfer_files\test</td></tr></tbody></table>
+
+**Parent topic:** [[File Share|File Share]]

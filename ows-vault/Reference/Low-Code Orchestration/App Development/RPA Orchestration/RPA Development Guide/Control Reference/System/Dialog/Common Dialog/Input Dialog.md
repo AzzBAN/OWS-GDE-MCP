@@ -1,0 +1,30 @@
+---
+title: "Input Dialog"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552560633.html"
+depth: 8
+---
+# Input Dialog
+
+**inputDialog**
+
+**Description:**
+
+Open a input dialog.
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560633__table19065mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560633__row19074mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552560633__row19093mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">form-name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">string</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">InputDialog</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Input Dialog Name</td></tr><tr id="EN-US_TOPIC_0000002552560633__row19107mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">form-data-htm</td><td class="cellrowborder" valign="top" width="16.666666666666664%">formBuilder</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">{"elements":[{"type":"input","options":{"width":"100%","defaultValue":"","required":false,"dataType":"string","placeholder":"","disabled":false,"type":"input","key":1646813805727},"key":1646813805727,"name":"input_1646813805727","label":"input_1646813805727","rules":[]}],"formConfig":{"labelWidth":0,"labelPosition":"left","size":"small","height":"","width":""}}</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">form content</td></tr><tr id="EN-US_TOPIC_0000002552560633__row19121mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002552560633__row19135mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560633__table19151mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560633__row19159mcpsimp"><td class="cellrowborder" valign="top" width="20%">name</td><td class="cellrowborder" valign="top" width="20%">type</td><td class="cellrowborder" valign="top" width="20%">default</td><td class="cellrowborder" valign="top" width="20%">range</td><td class="cellrowborder" valign="top" width="20%">help</td></tr><tr id="EN-US_TOPIC_0000002552560633__row19175mcpsimp"><td class="cellrowborder" valign="top" width="20%">return</td><td class="cellrowborder" valign="top" width="20%">String</td><td class="cellrowborder" valign="top" width="20%">inputDialogData</td><td class="cellrowborder" valign="top" width="20%">-</td><td class="cellrowborder" valign="top" width="20%">User input data</td></tr></tbody></table>
+
+**Samples**
+
+Create Input Dialog Box
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560633__table19190mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560633__row19195mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552560633__row19202mcpsimp"><td class="cellrowborder" valign="top" width="50%">form-name</td><td class="cellrowborder" valign="top" width="50%">Chinese Score</td></tr><tr id="EN-US_TOPIC_0000002552560633__row19208mcpsimp"><td class="cellrowborder" valign="top" width="50%">form-data-htm</td><td class="cellrowborder" valign="top" width="50%">Designed dialog boxes</td></tr><tr id="EN-US_TOPIC_0000002552560633__row19214mcpsimp"><td class="cellrowborder" valign="top" width="50%">description</td><td class="cellrowborder" valign="top" width="50%">midterm exam</td></tr></tbody></table>
+
+**Parent topic:** [[Common Dialog|Common Dialog]]

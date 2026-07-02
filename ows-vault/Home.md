@@ -11,11 +11,16 @@ A shared, evolving knowledge base for the **OWS Studio / ADC low-code platform**
   into the 3.6k-page reference corpus. Git-tracked; everyone contributes.
 - **Reference** (`Reference/`) — the full OWS Studio help corpus, imported
   verbatim from the scraped vault (Obsidian-navigable, `[[wikilinks]]` intact).
-  Auto-generated and gitignored — regenerate with the importer (see below).
+  Auto-generated and git-tracked — regenerate with the importer (see below).
 
 ## 00 Findings
 <!-- Add a bullet here when you add a note under "00 Findings/". -->
 - [[OWS Platform Findings]] — running list of platform gotchas confirmed in practice
+- [[ADC RunScript Constraints]] — server-side (Rhino2) RunScript rules from production failures, e.g. top-level `return` only
+- [[OWS Page Script Patterns]] — browser-side `Nf.ready(...)` / `S(...)` form-script API from live debugging
+- [[Platform Utility Functions]] — ambient Rhino globals available to a RunScript (no require/import), with exact signatures
+- [[ServiceInvoker and Model API]] — reading/writing model instances via `ServiceInvoker.post()`, incl. the mandatory per-call try/catch
+- [[TQL Findings]] — data-filtering vs. complete TQL forms, and the string-quoting trap
 
 ## Reference corpus
 - Root: `Reference/Low-Code Orchestration/` — User Guide, App Development,
