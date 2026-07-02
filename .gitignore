@@ -45,12 +45,11 @@ docs/discovery/**/sample-apps/
 *.gpk.zip
 
 # OWS knowledge vault — the per-project default is ./ows-vault (override with
-# OWS_VAULT_DIR). AUTO-GENERATED parts are regenerable and NOT committed:
-#   - Reference/   : imported OWS help corpus (scripts/import_help_corpus.py)
+# OWS_VAULT_DIR). ows-vault/Reference/ (imported OWS help corpus, see
+# scripts/import_help_corpus.py) IS tracked so it ships with the plugin.
+# Only truly local, regenerable artifacts stay ignored:
 #   - .index/      : sidecar search index
 #   - .obsidian/   : Obsidian workspace state
-# The CURATED parts (ows-vault/Home.md, ows-vault/00 Findings/**) ARE tracked.
-ows-vault/Reference/
 ows-vault/.index/
 ows-vault/.obsidian/
 # Legacy flat HTML cache from scripts/fetch_help_docs.py.

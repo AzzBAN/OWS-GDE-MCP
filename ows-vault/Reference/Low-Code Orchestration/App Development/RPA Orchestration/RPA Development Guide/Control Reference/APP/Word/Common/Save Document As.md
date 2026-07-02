@@ -1,0 +1,30 @@
+---
+title: "Save Document As"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552480495.html"
+depth: 8
+---
+# Save Document As
+
+**word.saveAs**
+
+**Description:**
+
+Save document as
+
+**Input:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480495__table36342mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:3300%"> <col style="width:3300%"> <col style="width:3300%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480495__row36348mcpsimp"><td class="cellrowborder" valign="top" width="33.33333333333333%">name</td><td class="cellrowborder" valign="top" width="33.33333333333333%">type</td><td class="cellrowborder" valign="top" width="33.33333333333333%">help</td></tr><tr id="EN-US_TOPIC_0000002552480495__row36358mcpsimp"><td class="cellrowborder" valign="top" width="33.33333333333333%">reference</td><td class="cellrowborder" valign="top" width="33.33333333333333%">DocObject</td><td class="cellrowborder" valign="top" width="33.33333333333333%">Specify the document object to be operated</td></tr></tbody></table>
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480495__table36368mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480495__row36377mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552480495__row36396mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">save-path</td><td class="cellrowborder" valign="top" width="16.666666666666664%">dir</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Set directory of save document</td></tr><tr id="EN-US_TOPIC_0000002552480495__row36410mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">filename</td><td class="cellrowborder" valign="top" width="16.666666666666664%">string</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Set filename of save document</td></tr><tr id="EN-US_TOPIC_0000002552480495__row36424mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">override</td><td class="cellrowborder" valign="top" width="16.666666666666664%">list</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True|False</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Override existing file when saving files.When the file name is not overwritten, the time string is added to the end of the file name.</td></tr><tr id="EN-US_TOPIC_0000002552480495__row36438mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002552480495__row36452mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output: none**
+
+**samples**
+
+Save Document as D:\\document\\test.docx
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480495__table36471mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480495__row36476mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552480495__row36483mcpsimp"><td class="cellrowborder" valign="top" width="50%">save-path</td><td class="cellrowborder" valign="top" width="50%">D:\document</td></tr><tr id="EN-US_TOPIC_0000002552480495__row36489mcpsimp"><td class="cellrowborder" valign="top" width="50%">filename</td><td class="cellrowborder" valign="top" width="50%">test.docx</td></tr></tbody></table>
+
+**Parent topic:** [[Common|Common]]

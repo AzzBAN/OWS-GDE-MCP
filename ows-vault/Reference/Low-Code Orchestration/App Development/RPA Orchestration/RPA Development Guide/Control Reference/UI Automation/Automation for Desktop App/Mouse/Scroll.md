@@ -1,0 +1,28 @@
+---
+title: "Scroll"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552560517.html"
+depth: 8
+---
+# Scroll
+
+**scrollTo**
+
+**Description:**
+
+Scroll the scroll bar; Do not switch windows when the scroll bar changes positions
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560517__table112670mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560517__row112679mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552560517__row112698mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">target</td><td class="cellrowborder" valign="top" width="16.666666666666664%">json</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Control Information</td></tr><tr id="EN-US_TOPIC_0000002552560517__row112712mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">value</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">1. Win32 application: the number of scroll wheel sliding times; when the value is positive, the scrolling direction of the scroll bar is downward, if it is negative, it is upward. When the scroll bar is dragged to the bottom and the command execution has not ended, it may be that the value is set too large 2.java application: the position of the scroll bar</td></tr><tr id="EN-US_TOPIC_0000002552560517__row112727mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">direction</td><td class="cellrowborder" valign="top" width="16.666666666666664%">list</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">vertical</td><td class="cellrowborder" valign="top" width="16.666666666666664%">vertical|horizontal</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Scroll horizontally or vertically</td></tr><tr id="EN-US_TOPIC_0000002552560517__row112741mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002552560517__row112755mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output: none**
+
+**samples**
+
+Pull down the scrollbar of a control(WindowControl) whose Name is "Windows"
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560517__table112774mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560517__row112779mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552560517__row112786mcpsimp"><td class="cellrowborder" valign="top" width="50%">target</td><td class="cellrowborder" valign="top" width="50%">{"driver_type":"uiautomation","appName":"explorer.exe", "title":"Windows","by":"Path","offset-x":"34","offset-y":"26","target":[{"x":"736","width":"49","y":"1040","ControlType":"WindowControl","Name":"Windows","height":"40"}]}</td></tr><tr id="EN-US_TOPIC_0000002552560517__row112792mcpsimp"><td class="cellrowborder" valign="top" width="50%">value</td><td class="cellrowborder" valign="top" width="50%">10</td></tr></tbody></table>
+
+**Parent topic:** [[Mouse|Mouse]]

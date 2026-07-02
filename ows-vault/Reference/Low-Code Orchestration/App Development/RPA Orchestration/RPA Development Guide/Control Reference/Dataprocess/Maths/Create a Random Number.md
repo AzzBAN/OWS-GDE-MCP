@@ -1,0 +1,38 @@
+---
+title: "Create a Random Number"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002521400730.html"
+depth: 7
+---
+# Create a Random Number
+
+**create\_random\_num**
+
+**Description:**
+
+Generates a random number in the specified range.
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002521400730__table26798mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002521400730__row26807mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002521400730__row26826mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">start</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">0</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Start Number</td></tr><tr id="EN-US_TOPIC_0000002521400730__row26840mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">stop</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">1</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Stop Number</td></tr><tr id="EN-US_TOPIC_0000002521400730__row26854mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">number_type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">list</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Integer</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Integer|Float</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Type of a random number, an integer or a floating point number.</td></tr><tr id="EN-US_TOPIC_0000002521400730__row26868mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002521400730__table26884mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002521400730__row26892mcpsimp"><td class="cellrowborder" valign="top" width="20%">name</td><td class="cellrowborder" valign="top" width="20%">type</td><td class="cellrowborder" valign="top" width="20%">default</td><td class="cellrowborder" valign="top" width="20%">range</td><td class="cellrowborder" valign="top" width="20%">help</td></tr><tr id="EN-US_TOPIC_0000002521400730__row26908mcpsimp"><td class="cellrowborder" valign="top" width="20%">return</td><td class="cellrowborder" valign="top" width="20%">Number</td><td class="cellrowborder" valign="top" width="20%">random_num</td><td class="cellrowborder" valign="top" width="20%">-</td><td class="cellrowborder" valign="top" width="20%">A random number</td></tr></tbody></table>
+
+**samples**
+
+Create a random number between 0 and 1
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002521400730__table26923mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002521400730__row26928mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002521400730__row26935mcpsimp"><td class="cellrowborder" valign="top" width="50%">start</td><td class="cellrowborder" valign="top" width="50%">0</td></tr><tr id="EN-US_TOPIC_0000002521400730__row26941mcpsimp"><td class="cellrowborder" valign="top" width="50%">stop</td><td class="cellrowborder" valign="top" width="50%">1</td></tr><tr id="EN-US_TOPIC_0000002521400730__row26947mcpsimp"><td class="cellrowborder" valign="top" width="50%">number_type</td><td class="cellrowborder" valign="top" width="50%">Float</td></tr></tbody></table>
+
+Create a random Integer between 1 and 100
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002521400730__table26954mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002521400730__row26959mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002521400730__row26966mcpsimp"><td class="cellrowborder" valign="top" width="50%">start</td><td class="cellrowborder" valign="top" width="50%">1</td></tr><tr id="EN-US_TOPIC_0000002521400730__row26972mcpsimp"><td class="cellrowborder" valign="top" width="50%">stop</td><td class="cellrowborder" valign="top" width="50%">100</td></tr><tr id="EN-US_TOPIC_0000002521400730__row26978mcpsimp"><td class="cellrowborder" valign="top" width="50%">number_type</td><td class="cellrowborder" valign="top" width="50%">Integer</td></tr></tbody></table>
+
+Create a random floating number between 1 and 100
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002521400730__table26985mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002521400730__row26990mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002521400730__row26997mcpsimp"><td class="cellrowborder" valign="top" width="50%">start</td><td class="cellrowborder" valign="top" width="50%">1</td></tr><tr id="EN-US_TOPIC_0000002521400730__row27003mcpsimp"><td class="cellrowborder" valign="top" width="50%">stop</td><td class="cellrowborder" valign="top" width="50%">100</td></tr><tr id="EN-US_TOPIC_0000002521400730__row27009mcpsimp"><td class="cellrowborder" valign="top" width="50%">number_type</td><td class="cellrowborder" valign="top" width="50%">Float</td></tr></tbody></table>
+
+**Parent topic:** [[Maths|Maths]]

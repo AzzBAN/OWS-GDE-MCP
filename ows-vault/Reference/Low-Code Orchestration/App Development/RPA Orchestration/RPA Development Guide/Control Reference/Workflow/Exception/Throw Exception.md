@@ -1,0 +1,28 @@
+---
+title: "Throw Exception"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552560665.html"
+depth: 7
+---
+# Throw Exception
+
+**throw**
+
+**Description:**
+
+Customizing Exception Names and Exception Information.You can use the variables exceptionName and exceptionMessage to reference the exception name and information in catch control.
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560665__table36965mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560665__row36974mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552560665__row36993mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">value</td><td class="cellrowborder" valign="top" width="16.666666666666664%">string</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">User-defined exception name and exception information. If the exception name is unknown, write the root exception Exception directly. Customize the exception format: exception name (exception information).This parameter is not recommended and will be discarded later.It is recommended that the other two parameters be used together</td></tr><tr id="EN-US_TOPIC_0000002552560665__row37007mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">exception-name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">string</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">UserDefinedError</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">User-defined exception name</td></tr><tr id="EN-US_TOPIC_0000002552560665__row37021mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">exception-description</td><td class="cellrowborder" valign="top" width="16.666666666666664%">string</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">User defined exception message</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">User-defined exception description</td></tr><tr id="EN-US_TOPIC_0000002552560665__row37035mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002552560665__row37049mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval</td></tr></tbody></table>
+
+**Output: none**
+
+**Samples**
+
+Throw an exception of the UsernameError type
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560665__table37068mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560665__row37073mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552560665__row37080mcpsimp"><td class="cellrowborder" valign="top" width="50%">exception-name</td><td class="cellrowborder" valign="top" width="50%">UsernameError</td></tr><tr id="EN-US_TOPIC_0000002552560665__row37086mcpsimp"><td class="cellrowborder" valign="top" width="50%">exception-description</td><td class="cellrowborder" valign="top" width="50%">username is incorrect</td></tr></tbody></table>
+
+**Parent topic:** [[Exception|Exception]]

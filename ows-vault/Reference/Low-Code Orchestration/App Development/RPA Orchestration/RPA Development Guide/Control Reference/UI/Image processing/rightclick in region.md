@@ -1,0 +1,28 @@
+---
+title: "rightclick in region"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552480897.html"
+depth: 7
+---
+# rightclick in region
+
+**citrix.rclickPicRegion**
+
+**Description:**
+
+Right-click on the picture under a certain area (combined with citrix.waitForPic to identify a certain area); configure the offset of x and y axis to control the position in the picture, if not configured, click the picture center by default
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480897__table86454mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480897__row86463mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552480897__row86482mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">image</td><td class="cellrowborder" valign="top" width="16.666666666666664%">file</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">The path is the image name.(The format of the image path is ***.png, which must end with .png|.jpg)</td></tr><tr id="EN-US_TOPIC_0000002552480897__row86496mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">offset-x</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">x axis offset</td></tr><tr id="EN-US_TOPIC_0000002552480897__row86510mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">offset-y</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">y axis offset</td></tr><tr id="EN-US_TOPIC_0000002552480897__row86524mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002552480897__row86538mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output: none**
+
+**Samples**
+
+Right-click the wei.png image under a certain area, and click the coordinates of the upper left corner of the image (20,20)
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480897__table86557mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480897__row86562mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552480897__row86569mcpsimp"><td class="cellrowborder" valign="top" width="50%">image</td><td class="cellrowborder" valign="top" width="50%">wei.png</td></tr><tr id="EN-US_TOPIC_0000002552480897__row86575mcpsimp"><td class="cellrowborder" valign="top" width="50%">offset-x</td><td class="cellrowborder" valign="top" width="50%">20</td></tr><tr id="EN-US_TOPIC_0000002552480897__row86581mcpsimp"><td class="cellrowborder" valign="top" width="50%">offset-y</td><td class="cellrowborder" valign="top" width="50%">20</td></tr></tbody></table>
+
+**Parent topic:** [[Image processing|Image processing]]

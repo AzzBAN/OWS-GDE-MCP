@@ -1,0 +1,16 @@
+---
+title: "Common TQL Reserved Words"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/adc_tql_004.html"
+depth: 6
+---
+# Common TQL Reserved Words
+
+The reserved words described in this topic are those used in all ADC scenarios. The details are as follows:
+
+ALL, ALTER, ANALYZE, AND, ANY, AS, ASC, BETWEEN, BY, CASE, CHAR, CHECK, CLUSTER, COMPRESS, CONNECT, CONTAINS, CREATE, DATE, DECIMAL, DEFAULT, DELETE, DESC, DISTINCT, DROP, ELSE, EMPTY, END, ENDS, EQUAL, EXCLUSIVE, EXISTS, FALSE, FIRST, FLOAT, FOR, FROM, FULL, GRANT, GREATER, GROUP, HAVING, IDENTIFIED, IGNORE, IN, INDEX, INNER, INSERT, INTEGER, INTERSECT, INTO, IS, JOIN, LAST, LEFT, LESS, LIKE, LIMIT, LOCK, LONG, MINUS, MODE, NOCOMPRESS, NOT, NOWAIT, NULL, NULLS, NUMBER, OF, ON, OPTION, OR, ORDER, OUTER, OVER, PARTITION, PCTFREE, PRIOR, PUBLIC, RAW, RENAME, RESOURCE, REVOKE, RIGHT, SELECT, SET, SHARE, SIZE, SMALLINT, START, STARTS, SYNONYM, TABLE, THAN, THEN, TO, TRIGGER, TRUE, TRUNCATE, UNION, UPDATE, USING, UNIQUE, VALUES, VARCHAR, VIEW, WHEN, WHERE, WITH
+
+![[note_3.0-en-us.png]]
+
+The reserved words are case insensitive.
+
+**Parent topic:** [[TQL Overview|TQL Overview]]

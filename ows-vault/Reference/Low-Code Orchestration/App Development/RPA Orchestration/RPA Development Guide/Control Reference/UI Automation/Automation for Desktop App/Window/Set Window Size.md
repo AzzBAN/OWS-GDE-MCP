@@ -1,0 +1,32 @@
+---
+title: "Set Window Size"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552560523.html"
+depth: 8
+---
+# Set Window Size
+
+**resize**
+
+**Description:**
+
+Set window size
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560523__table60917mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560523__row60926mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552560523__row60945mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">target</td><td class="cellrowborder" valign="top" width="16.666666666666664%">json</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Control Information</td></tr><tr id="EN-US_TOPIC_0000002552560523__row60959mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">width</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Width of the window</td></tr><tr id="EN-US_TOPIC_0000002552560523__row60973mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">height</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Height of the window</td></tr><tr id="EN-US_TOPIC_0000002552560523__row60987mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002552560523__row61001mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output: none**
+
+**samples**
+
+1.Set the notepad window to 400x400
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560523__table61020mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560523__row61025mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552560523__row61032mcpsimp"><td class="cellrowborder" valign="top" width="50%">target</td><td class="cellrowborder" valign="top" width="50%">{"driver_type":"uiautomation","appName":"notepad.exe","by":"Path","offset-x":"75","offset-y":"7","target":[{"ClassName":"Notepad","x":"263","width":"197","y":"546","ControlType":"WindowControl","Name":"Untitled-Notepad","height":"22"}]}</td></tr><tr id="EN-US_TOPIC_0000002552560523__row61038mcpsimp"><td class="cellrowborder" valign="top" width="50%">width</td><td class="cellrowborder" valign="top" width="50%">400</td></tr><tr id="EN-US_TOPIC_0000002552560523__row61044mcpsimp"><td class="cellrowborder" valign="top" width="50%">height</td><td class="cellrowborder" valign="top" width="50%">400</td></tr></tbody></table>
+
+The linux system sets the first Chromium window size to 400\*400
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560523__table61051mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560523__row61056mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552560523__row61063mcpsimp"><td class="cellrowborder" valign="top" width="50%">target</td><td class="cellrowborder" valign="top" width="50%">{"driver_type":"uiautomation", "target": {"title":"Chromium","index":0}}</td></tr><tr id="EN-US_TOPIC_0000002552560523__row61069mcpsimp"><td class="cellrowborder" valign="top" width="50%">width</td><td class="cellrowborder" valign="top" width="50%">400</td></tr><tr id="EN-US_TOPIC_0000002552560523__row61075mcpsimp"><td class="cellrowborder" valign="top" width="50%">height</td><td class="cellrowborder" valign="top" width="50%">400</td></tr></tbody></table>
+
+**Parent topic:** [[Window|Window]]

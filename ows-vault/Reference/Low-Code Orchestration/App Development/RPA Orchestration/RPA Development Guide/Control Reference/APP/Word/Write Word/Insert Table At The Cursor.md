@@ -1,0 +1,34 @@
+---
+title: "Insert Table At The Cursor"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552560499.html"
+depth: 8
+---
+# Insert Table At The Cursor
+
+**word.insertTable**
+
+**Description:**
+
+Insert Table in the document at the cursor position
+
+**Input:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560499__table82215mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:3300%"> <col style="width:3300%"> <col style="width:3300%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560499__row82221mcpsimp"><td class="cellrowborder" valign="top" width="33.33333333333333%">name</td><td class="cellrowborder" valign="top" width="33.33333333333333%">type</td><td class="cellrowborder" valign="top" width="33.33333333333333%">help</td></tr><tr id="EN-US_TOPIC_0000002552560499__row82231mcpsimp"><td class="cellrowborder" valign="top" width="33.33333333333333%">reference</td><td class="cellrowborder" valign="top" width="33.33333333333333%">DocObject</td><td class="cellrowborder" valign="top" width="33.33333333333333%">Specify the document object to be operated</td></tr></tbody></table>
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560499__table82241mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560499__row82250mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552560499__row82269mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">table</td><td class="cellrowborder" valign="top" width="16.666666666666664%">string</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Table to be inserted, Array Format</td></tr><tr id="EN-US_TOPIC_0000002552560499__row82283mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">border</td><td class="cellrowborder" valign="top" width="16.666666666666664%">list</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True|False</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Indicates whether to add a border when inserting table data.</td></tr><tr id="EN-US_TOPIC_0000002552560499__row82297mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">break-line</td><td class="cellrowborder" valign="top" width="16.666666666666664%">list</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True|False</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Break line before inserting table</td></tr><tr id="EN-US_TOPIC_0000002552560499__row82311mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002552560499__row82325mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output: none**
+
+**samples**
+
+Insert tables \[1, 2, 3\], \[4, 5, 6\]\] at the cursor position
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560499__table82344mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560499__row82349mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552560499__row82356mcpsimp"><td class="cellrowborder" valign="top" width="50%">table</td><td class="cellrowborder" valign="top" width="50%">[[1,2,3],[4,5,6]]</td></tr><tr id="EN-US_TOPIC_0000002552560499__row82362mcpsimp"><td class="cellrowborder" valign="top" width="50%">border</td><td class="cellrowborder" valign="top" width="50%">True</td></tr></tbody></table>
+
+Wrap the line at the cursor position and insert the table \[1, 2, 3\], \[4, 5, 6\]\]
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560499__table82369mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560499__row82374mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552560499__row82381mcpsimp"><td class="cellrowborder" valign="top" width="50%">table</td><td class="cellrowborder" valign="top" width="50%">[[1,2,3],[4,5,6]]</td></tr><tr id="EN-US_TOPIC_0000002552560499__row82387mcpsimp"><td class="cellrowborder" valign="top" width="50%">break-line</td><td class="cellrowborder" valign="top" width="50%">True</td></tr></tbody></table>
+
+**Parent topic:** [[Write Word|Write Word]]

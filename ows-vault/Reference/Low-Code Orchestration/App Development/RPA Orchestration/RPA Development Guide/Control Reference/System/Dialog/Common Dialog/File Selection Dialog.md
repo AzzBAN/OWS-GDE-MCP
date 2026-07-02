@@ -1,0 +1,30 @@
+---
+title: "File Selection Dialog"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552480617.html"
+depth: 8
+---
+# File Selection Dialog
+
+**fileSelectionDialog**
+
+**Description:**
+
+Open a file selection dialog.
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480617__table30921mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480617__row30930mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552480617__row30949mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">form-name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">string</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">fileSelectionDialog</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">File Selection Dialog Name</td></tr><tr id="EN-US_TOPIC_0000002552480617__row30963mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">form-data-htm</td><td class="cellrowborder" valign="top" width="16.666666666666664%">formBuilder</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">{"elements":[{"type":"file","options":{"width":"100%","defaultValue":"","required":false,"placeholder":"","type":"file","key":1649412134956},"rules":[{"validator":"defaultValueValidate"}],"name":"file_1649412134956","key":1649412134956,"label":"file_1649412134956"}],"formConfig":{"labelWidth":0,"labelPosition":"left","size":"small","height":"","width":""}}</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">form content</td></tr><tr id="EN-US_TOPIC_0000002552480617__row30977mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002552480617__row30991mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480617__table31007mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480617__row31015mcpsimp"><td class="cellrowborder" valign="top" width="20%">name</td><td class="cellrowborder" valign="top" width="20%">type</td><td class="cellrowborder" valign="top" width="20%">default</td><td class="cellrowborder" valign="top" width="20%">range</td><td class="cellrowborder" valign="top" width="20%">help</td></tr><tr id="EN-US_TOPIC_0000002552480617__row31031mcpsimp"><td class="cellrowborder" valign="top" width="20%">return</td><td class="cellrowborder" valign="top" width="20%">String</td><td class="cellrowborder" valign="top" width="20%">fileSelectData</td><td class="cellrowborder" valign="top" width="20%">-</td><td class="cellrowborder" valign="top" width="20%">User select data of file path</td></tr></tbody></table>
+
+**Samples**
+
+Create File selection box
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480617__table31046mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480617__row31051mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552480617__row31058mcpsimp"><td class="cellrowborder" valign="top" width="50%">form-name</td><td class="cellrowborder" valign="top" width="50%">Files to be downloaded</td></tr><tr id="EN-US_TOPIC_0000002552480617__row31064mcpsimp"><td class="cellrowborder" valign="top" width="50%">form-data-htm</td><td class="cellrowborder" valign="top" width="50%">Designed File selection box</td></tr><tr id="EN-US_TOPIC_0000002552480617__row31070mcpsimp"><td class="cellrowborder" valign="top" width="50%">description</td><td class="cellrowborder" valign="top" width="50%">Download File</td></tr></tbody></table>
+
+**Parent topic:** [[Common Dialog|Common Dialog]]

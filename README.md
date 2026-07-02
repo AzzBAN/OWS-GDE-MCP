@@ -189,6 +189,30 @@ where you use it. Skills are namespaced under the plugin, e.g.
 > Prefer to wire the MCP yourself instead of bundling? Skip the plugin and add
 > the `mcpServers` config above; the skills can still be installed standalone.
 
+### Where the code actually runs
+
+These two setups are **not the same server**, and you can have both active
+in the same session (they show up as separate tool namespaces,
+`mcp__ows-gde__*` vs `mcp__plugin_ows-gde-mcp_ows-gde__*`):
+
+- **Installed plugin** (`claude plugin install`) — `${CLAUDE_PLUGIN_ROOT}`
+  points at `~/.claude/plugins/cache/<marketplace>/ows-gde-mcp/<version>/`, a
+  snapshot synced from a full clone of the marketplace repo
+  (`~/.claude/plugins/marketplaces/<marketplace>`), pinned to whatever commit
+  was on the marketplace's default branch at install/update time. Editing
+  your local checkout does **nothing** for plugin users — they only pick up
+  changes after you push and they run `claude plugin marketplace update` /
+  `claude plugin update`.
+- **Raw `mcpServers` entry** (the `.mcp.json` in this repo, or one you hand-add
+  pointing `--project` at a local path) — runs live against whatever is on
+  disk in that directory, uncommitted changes included.
+
+Either way, **`.env` and the knowledge vault (`OWS_VAULT_DIR`, default
+`./ows-vault`) resolve relative to the process's current working
+directory** — i.e. wherever you launched `claude` from — never relative to
+`${CLAUDE_PLUGIN_ROOT}`. A fresh plugin install does not bring your `.env` or
+vault findings with it; each project directory needs its own.
+
 ### Knowledge vault & findings
 
 The help tools read an Obsidian-standard vault, resolved from `OWS_VAULT_DIR`

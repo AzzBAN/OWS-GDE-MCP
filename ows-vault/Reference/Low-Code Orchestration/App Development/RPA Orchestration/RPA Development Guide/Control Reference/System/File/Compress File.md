@@ -1,0 +1,36 @@
+---
+title: "Compress File"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552480601.html"
+depth: 7
+---
+# Compress File
+
+**zip**
+
+**Description:**
+
+Use the 7z.exe tool to compress files. Support formats zip, tar, 7z
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480601__table48999mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480601__row49008mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552480601__row49027mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">target</td><td class="cellrowborder" valign="top" width="16.666666666666664%">new_file</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Absolute path of the compressed file</td></tr><tr id="EN-US_TOPIC_0000002552480601__row49041mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">targettype</td><td class="cellrowborder" valign="top" width="16.666666666666664%">list</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">7z</td><td class="cellrowborder" valign="top" width="16.666666666666664%">7z|zip|tar</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Compression format. The value can be .7z/.zip./.tar</td></tr><tr id="EN-US_TOPIC_0000002552480601__row49055mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">value</td><td class="cellrowborder" valign="top" width="16.666666666666664%">string</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Resource files or directories to be compressed.</td></tr><tr id="EN-US_TOPIC_0000002552480601__row49069mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">mode</td><td class="cellrowborder" valign="top" width="16.666666666666664%">list</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">create</td><td class="cellrowborder" valign="top" width="16.666666666666664%">create|update</td><td class="cellrowborder" valign="top" width="16.666666666666664%">When a compressed file exists, select whether to recreate or update it to an existing compressed file, default recreate.If the value is update, the new compressed file will be created if the compressed file does not exist</td></tr><tr id="EN-US_TOPIC_0000002552480601__row49083mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002552480601__row49097mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output: none**
+
+**Samples**
+
+Compress the D:\\test directory to D:\\test.zip.
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480601__table49116mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480601__row49121mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552480601__row49128mcpsimp"><td class="cellrowborder" valign="top" width="50%">target</td><td class="cellrowborder" valign="top" width="50%">D:\\test.zip</td></tr><tr id="EN-US_TOPIC_0000002552480601__row49134mcpsimp"><td class="cellrowborder" valign="top" width="50%">value</td><td class="cellrowborder" valign="top" width="50%">D:\\test</td></tr><tr id="EN-US_TOPIC_0000002552480601__row49140mcpsimp"><td class="cellrowborder" valign="top" width="50%">targettype</td><td class="cellrowborder" valign="top" width="50%">zip</td></tr></tbody></table>
+
+Run the following commands to compress all files in the D:\\test directory and save the files as D:\\test.zip.
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480601__table49147mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480601__row49152mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552480601__row49159mcpsimp"><td class="cellrowborder" valign="top" width="50%">target</td><td class="cellrowborder" valign="top" width="50%">D:\\test.zip</td></tr><tr id="EN-US_TOPIC_0000002552480601__row49165mcpsimp"><td class="cellrowborder" valign="top" width="50%">value</td><td class="cellrowborder" valign="top" width="50%">D:\\test\\*</td></tr><tr id="EN-US_TOPIC_0000002552480601__row49171mcpsimp"><td class="cellrowborder" valign="top" width="50%">option</td><td class="cellrowborder" valign="top" width="50%">zip</td></tr></tbody></table>
+
+The usage example is as follows:
+
+![[en-us_image_0000002552560935.png]]
+
+**Parent topic:** [[File|File]]

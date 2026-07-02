@@ -1,0 +1,56 @@
+---
+title: "Q-Sender"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002521400728.html"
+depth: 7
+---
+# Q-Sender
+
+**sendQrData**
+
+**Description:**
+
+Sends data in the QR code transmission scheme:
+
+1\. This command is used only in specific scenarios. The receiveQrData command is used at the other end of the transmission. Used to transfer files or data volume when a single QR code cannot be transferred.
+
+2\. This command involves camera shooting. The camera image is not displayed. Align the camera with the receiver screen to adjust the camera.
+
+Input parameter:
+
+1\. kind: int type, mandatory, data|file, transfer data type (string or file).
+
+2\. qrcode\_size: optional, int type, data stored in each QR code.
+
+3\. image\_size: optional. The value is an int type. The value is greater than 300 and less than 1200. The length and width of the image to be displayed are the same. If the value is greater than the resolution of the local computer, the screen is adaptive.
+
+4\. position: position of the image to be displayed. The value type is list. The default value is middle.
+
+5\. data: string type. This parameter is mandatory when kind is set to data. It indicates the data character string to be transferred.
+
+6\. file: indicates the absolute path of the file to be transferred. This parameter is mandatory when kind is set to file.
+
+7\. index: int type, mandatory, or camera ID (0 indicates the built-in camera; 1, 2, ... indicates the USB external camera).
+
+Output parameter:
+
+This command does not return any value.
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002521400728__table132584mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002521400728__row132593mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132612mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">kind</td><td class="cellrowborder" valign="top" width="16.666666666666664%">list</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">data</td><td class="cellrowborder" valign="top" width="16.666666666666664%">file|data</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Data type (Character string or file class) to be transferred</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132626mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">qrcode_size</td><td class="cellrowborder" valign="top" width="16.666666666666664%">int</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">128</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Data stored in each QR code</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132640mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">image_size</td><td class="cellrowborder" valign="top" width="16.666666666666664%">int</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">300</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">The size of the picture when displayed, the length and width are the same;If the set value is greater than the local computer resolution, it will adapt to the screen</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132654mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">position</td><td class="cellrowborder" valign="top" width="16.666666666666664%">list</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">center</td><td class="cellrowborder" valign="top" width="16.666666666666664%">upper left|lower left|upper right|lower right|center</td><td class="cellrowborder" valign="top" width="16.666666666666664%">display pictures: upper left|lower left|upper right|lower right|center</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132668mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">data</td><td class="cellrowborder" valign="top" width="16.666666666666664%">string</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">The data string to be transmitted</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132682mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">file</td><td class="cellrowborder" valign="top" width="16.666666666666664%">file</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">File path</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132696mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">index</td><td class="cellrowborder" valign="top" width="16.666666666666664%">int</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Camera number (0 means built-in camera, 1,2...... means USB external camera)</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132710mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132724mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output: none**
+
+**Samples**
+
+Sending data in the QR code transmission scheme
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002521400728__table132743mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002521400728__row132748mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132755mcpsimp"><td class="cellrowborder" valign="top" width="50%">kind</td><td class="cellrowborder" valign="top" width="50%">data</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132761mcpsimp"><td class="cellrowborder" valign="top" width="50%">qrcode_size</td><td class="cellrowborder" valign="top" width="50%">128</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132767mcpsimp"><td class="cellrowborder" valign="top" width="50%">image_size</td><td class="cellrowborder" valign="top" width="50%">300</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132773mcpsimp"><td class="cellrowborder" valign="top" width="50%">position</td><td class="cellrowborder" valign="top" width="50%">upper right</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132779mcpsimp"><td class="cellrowborder" valign="top" width="50%">index</td><td class="cellrowborder" valign="top" width="50%">0</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132785mcpsimp"><td class="cellrowborder" valign="top" width="50%">data</td><td class="cellrowborder" valign="top" width="50%">Q transmission scheme sender</td></tr></tbody></table>
+
+Sending a file in the QR code transfer scheme (the file path is D:\\test.doc).
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002521400728__table132792mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002521400728__row132797mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132804mcpsimp"><td class="cellrowborder" valign="top" width="50%">kind</td><td class="cellrowborder" valign="top" width="50%">file</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132810mcpsimp"><td class="cellrowborder" valign="top" width="50%">qrcode_size</td><td class="cellrowborder" valign="top" width="50%">128</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132816mcpsimp"><td class="cellrowborder" valign="top" width="50%">image_size</td><td class="cellrowborder" valign="top" width="50%">300</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132822mcpsimp"><td class="cellrowborder" valign="top" width="50%">position</td><td class="cellrowborder" valign="top" width="50%">upper right</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132828mcpsimp"><td class="cellrowborder" valign="top" width="50%">index</td><td class="cellrowborder" valign="top" width="50%">0</td></tr><tr id="EN-US_TOPIC_0000002521400728__row132834mcpsimp"><td class="cellrowborder" valign="top" width="50%">file</td><td class="cellrowborder" valign="top" width="50%">D:\test.doc</td></tr></tbody></table>
+
+**Parent topic:** [[QR Code Processing|QR Code Processing]]

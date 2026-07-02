@@ -1,0 +1,36 @@
+---
+title: "Get Control"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552480515.html"
+depth: 8
+---
+# Get Control
+
+**getControlInfo**
+
+**Description:**
+
+Obtaining Control Information
+
+The value of the corresponding attribute can be obtained based on the filter criteria (the attribute name is case sensitive). If no filter criteria are available, all attribute information of the control is returned.
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480515__table48821mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480515__row48830mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552480515__row48849mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">target</td><td class="cellrowborder" valign="top" width="16.666666666666664%">json</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Control Information</td></tr><tr id="EN-US_TOPIC_0000002552480515__row48863mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">filter-value</td><td class="cellrowborder" valign="top" width="16.666666666666664%">string</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Filter criteria; filter criteria means specifying the attribute name. Enter the control attribute name (case sensitive) based on the obtained control information to obtain the corresponding attribute value.</td></tr><tr id="EN-US_TOPIC_0000002552480515__row48877mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002552480515__row48891mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480515__table48907mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480515__row48915mcpsimp"><td class="cellrowborder" valign="top" width="20%">name</td><td class="cellrowborder" valign="top" width="20%">type</td><td class="cellrowborder" valign="top" width="20%">default</td><td class="cellrowborder" valign="top" width="20%">range</td><td class="cellrowborder" valign="top" width="20%">help</td></tr><tr id="EN-US_TOPIC_0000002552480515__row48931mcpsimp"><td class="cellrowborder" valign="top" width="20%">return</td><td class="cellrowborder" valign="top" width="20%">Object</td><td class="cellrowborder" valign="top" width="20%">control_info</td><td class="cellrowborder" valign="top" width="20%">-</td><td class="cellrowborder" valign="top" width="20%">Control info</td></tr></tbody></table>
+
+**samples**
+
+obtain the information about the control (MenuItemControl) whose Name is File.
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480515__table48946mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480515__row48951mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552480515__row48958mcpsimp"><td class="cellrowborder" valign="top" width="50%">target</td><td class="cellrowborder" valign="top" width="50%">{"driver_type":"uiautomation","appName":"notepad.exe","title":"a.txt - Notepad","by":"Path","offset-x":"25","offset-y":"11","target":[{"ClassName":"Notepad","x":"260","width":"52","y":"429","ControlType":"WindowControl","Name":"a.txt - Notepad","height":"19"},{"ControlType":"MenuBarControl"},{"GlobalIndex":"1","ControlType":"MenuItemControl","Name":"File"}]}</td></tr></tbody></table>
+
+Gets the value of the driver\_type property of the control (MenuItemControl) whose Name is File (F)
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552480515__table48965mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552480515__row48970mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552480515__row48977mcpsimp"><td class="cellrowborder" valign="top" width="50%">target</td><td class="cellrowborder" valign="top" width="50%">{"driver_type":"uiautomation","appName":"notepad.exe","title":"a.txt - Notepad","by":"Path","offset-x":"25","offset-y":"11","target":[{"ClassName":"Notepad","x":"260","width":"52","y":"429","ControlType":"WindowControl","Name":"a.txt - Notepad","height":"19"},{"ControlType":"MenuBarControl"},{"GlobalIndex":"1","ControlType":"MenuItemControl","Name":"File"}]}</td></tr><tr id="EN-US_TOPIC_0000002552480515__row48983mcpsimp"><td class="cellrowborder" valign="top" width="50%">filter-value</td><td class="cellrowborder" valign="top" width="50%">driver_type</td></tr></tbody></table>
+
+**Parent topic:** [[General|General]]

@@ -1,0 +1,38 @@
+---
+title: "Read PDF"
+source: "https://1057-sg-studio.teleows.com/adc-studio-project-mgt/web/rest/help/doc/en_US/toctopics/en-us_topic_0000002552560613.html"
+depth: 7
+---
+# Read PDF
+
+**readPdf**
+
+**Description:**
+
+Reads the table or text content in the PDF file
+
+**Input: none**
+
+**Parameters:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560613__table68291mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"> <col style="width:1700%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560613__row68300mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">is_required</td><td class="cellrowborder" valign="top" width="16.666666666666664%">default</td><td class="cellrowborder" valign="top" width="16.666666666666664%">range</td><td class="cellrowborder" valign="top" width="16.666666666666664%">help</td></tr><tr id="EN-US_TOPIC_0000002552560613__row68319mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">file-name</td><td class="cellrowborder" valign="top" width="16.666666666666664%">file</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">pdf</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Absolute path of the file to be parsed</td></tr><tr id="EN-US_TOPIC_0000002552560613__row68333mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">filter-page</td><td class="cellrowborder" valign="top" width="16.666666666666664%">string</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">all</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Specify the number of pages read,Specifies the number of pages to be read,To read all PDF pages, set this parameter to all. (Note:If the size of the file to be read is too large, the system may freeze.) e.g.:1-2 Note: The number of pages can only be a positive integer, and the start page cannot be greater than the end page when specifying the range of pages</td></tr><tr id="EN-US_TOPIC_0000002552560613__row68348mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">filter-type</td><td class="cellrowborder" valign="top" width="16.666666666666664%">list</td><td class="cellrowborder" valign="top" width="16.666666666666664%">True</td><td class="cellrowborder" valign="top" width="16.666666666666664%">text</td><td class="cellrowborder" valign="top" width="16.666666666666664%">text|table</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Specify the type of data read</td></tr><tr id="EN-US_TOPIC_0000002552560613__row68362mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">timeout</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Timeout interval(ms). After the execution of an atomic command fails, if the execution time does not exceed the set timeout period, the atomic command is retried until the set timeout period is exceeded.</td></tr><tr id="EN-US_TOPIC_0000002552560613__row68376mcpsimp"><td class="cellrowborder" valign="top" width="16.666666666666664%">delay</td><td class="cellrowborder" valign="top" width="16.666666666666664%">number</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">-</td><td class="cellrowborder" valign="top" width="16.666666666666664%">Delay from the previous operation</td></tr></tbody></table>
+
+**Output:**
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560613__table68392mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"> <col style="width:2000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560613__row68400mcpsimp"><td class="cellrowborder" valign="top" width="20%">name</td><td class="cellrowborder" valign="top" width="20%">type</td><td class="cellrowborder" valign="top" width="20%">default</td><td class="cellrowborder" valign="top" width="20%">range</td><td class="cellrowborder" valign="top" width="20%">help</td></tr><tr id="EN-US_TOPIC_0000002552560613__row68416mcpsimp"><td class="cellrowborder" valign="top" width="20%">return</td><td class="cellrowborder" valign="top" width="20%">Object</td><td class="cellrowborder" valign="top" width="20%">readPdf_ret</td><td class="cellrowborder" valign="top" width="20%">-</td><td class="cellrowborder" valign="top" width="20%">Content in PDF file</td></tr></tbody></table>
+
+**Samples**
+
+Obtain the table data on pages 1 to 2 in the D:\\AntRobot\\test.pdf file.
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560613__table68431mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560613__row68436mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552560613__row68443mcpsimp"><td class="cellrowborder" valign="top" width="50%">file-name</td><td class="cellrowborder" valign="top" width="50%">D:\AntRobot\test.pdf</td></tr><tr id="EN-US_TOPIC_0000002552560613__row68449mcpsimp"><td class="cellrowborder" valign="top" width="50%">filter-page</td><td class="cellrowborder" valign="top" width="50%">1-2</td></tr><tr id="EN-US_TOPIC_0000002552560613__row68455mcpsimp"><td class="cellrowborder" valign="top" width="50%">filter-type</td><td class="cellrowborder" valign="top" width="50%">table</td></tr></tbody></table>
+
+Obtain the text data on pages 1 to 2 in the pdf file "D:\\AntRobot\\test.pdf" as follows:
+
+<table cellpadding="4" cellspacing="0" summary="" id="EN-US_TOPIC_0000002552560613__table68462mcpsimp" frame="border" border="1" rules="all"><colgroup><col style="width:5000%"> <col style="width:5000%"></colgroup><tbody><tr id="EN-US_TOPIC_0000002552560613__row68467mcpsimp"><td class="cellrowborder" valign="top" width="50%">Param</td><td class="cellrowborder" valign="top" width="50%">Value</td></tr><tr id="EN-US_TOPIC_0000002552560613__row68474mcpsimp"><td class="cellrowborder" valign="top" width="50%">file-name</td><td class="cellrowborder" valign="top" width="50%">D:\AntRobot\test.pdf</td></tr><tr id="EN-US_TOPIC_0000002552560613__row68480mcpsimp"><td class="cellrowborder" valign="top" width="50%">filter-page</td><td class="cellrowborder" valign="top" width="50%">1-2</td></tr><tr id="EN-US_TOPIC_0000002552560613__row68486mcpsimp"><td class="cellrowborder" valign="top" width="50%">filter-type</td><td class="cellrowborder" valign="top" width="50%">text</td></tr></tbody></table>
+
+The usage example is as follows:
+
+![[en-us_image_0000002521400948.png]]
+
+**Parent topic:** [[File|File]]
