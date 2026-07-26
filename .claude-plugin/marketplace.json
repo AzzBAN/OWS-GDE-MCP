@@ -9,7 +9,7 @@
       "name": "ows-gde-mcp",
       "source": ".",
       "description": "GDE MCP server (Studio/runtime introspection, model/TQL queries, service invocation) + guidance skills + an evolving Obsidian knowledge vault with end-user-writable findings.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "productivity",
       "tags": ["ows", "gde", "adc", "huawei", "mcp", "skills", "knowledge"]
     },
@@ -17,7 +17,7 @@
       "name": "ows-skills",
       "source": ".",
       "description": "OWS development skills for Claude Code — query model data, analyze pages, debug services, and build new elements.",
-      "version": "1.0.0",
+      "version": "0.1.1",
       "category": "development",
       "tags": ["ows", "gde", "adc", "skills"]
     }

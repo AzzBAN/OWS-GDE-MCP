@@ -1,6 +1,6 @@
 {
   "name": "ows-gde-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OWS / ADC (teleows.com) toolkit for Claude Code: the GDE MCP server (Studio + runtime introspection, model/TQL queries, service invocation), guidance skills, and an evolving Obsidian knowledge vault with curated, end-user-writable findings.",
   "author": {
     "name": "OWS GDE Team"
