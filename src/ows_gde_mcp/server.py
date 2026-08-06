@@ -22,6 +22,7 @@ from ows_gde_mcp.tools import help as _help
 from ows_gde_mcp.tools import live as _live
 from ows_gde_mcp.tools import log_analysis as _logs
 from ows_gde_mcp.tools import packages as _pkgs
+from ows_gde_mcp.tools import pages as _pages
 from ows_gde_mcp.tools import processes as _procs
 from ows_gde_mcp.tools import references as _refs
 from ows_gde_mcp.tools import scripts as _scripts
@@ -53,10 +54,15 @@ mcp.tool()(_live.get_model)
 mcp.tool()(_live.get_model_schema)
 mcp.tool()(_live.list_services)
 mcp.tool()(_live.get_service)
-# Studio (design-state) — pages & scripts (endpoints inferred — see live.py)
-mcp.tool()(_live.list_pages)
-mcp.tool()(_live.get_page)
-mcp.tool()(_live.get_page_detail)
+# Studio (design-state) — pages
+mcp.tool()(_pages.list_pages)
+mcp.tool()(_pages.get_page)
+mcp.tool()(_pages.get_page_detail)
+mcp.tool()(_pages.save_page_content)
+mcp.tool()(_pages.create_page)
+mcp.tool()(_pages.add_page_component)
+mcp.tool()(_pages.update_page_component_props)
+mcp.tool()(_pages.remove_page_component)
 mcp.tool()(_live.list_scripts)
 mcp.tool()(_live.list_triggers)
 mcp.tool()(_live.get_trigger)
@@ -74,6 +80,8 @@ mcp.tool()(_procs.refresh_process_cache)
 # Verified against testbed Studio on 2026-05-18 — see tools/scripts.py.
 mcp.tool()(_scripts.list_service_scripts)
 mcp.tool()(_scripts.get_service_script)
+mcp.tool()(_scripts.create_service_script)
+mcp.tool()(_scripts.update_service_script)
 mcp.tool()(_scripts.get_page_scripts)
 mcp.tool()(_scripts.list_page_scripts)
 

@@ -104,6 +104,7 @@ class Settings(BaseSettings):
 
     # Production safety gate.
     OWS_PROD_WRITE_ENABLED: bool = False
+    OWS_STUDIO_WRITE_ENABLED: bool = False
 
     # Server transport.
     OWS_MCP_TRANSPORT: str = "stdio"  # "stdio" | "http"
@@ -160,6 +161,20 @@ class Settings(BaseSettings):
         if not confirm:
             raise ValueError(
                 "Production mutation requires confirm=True. "
+                "Re-issue the call with confirm=true once you're sure."
+            )
+
+    def assert_studio_write_allowed(self, tenant: Tenant, *, confirm: bool) -> None:
+        """Call from any tool that mutates design-state/Studio elements."""
+        if tenant != Tenant.PROD:
+            return
+        if not self.OWS_STUDIO_WRITE_ENABLED:
+            raise PermissionError(
+                "Studio writes are disabled. Set OWS_STUDIO_WRITE_ENABLED=1 in .env to allow."
+            )
+        if not confirm:
+            raise ValueError(
+                "Production Studio mutation requires confirm=True. "
                 "Re-issue the call with confirm=true once you're sure."
             )
 

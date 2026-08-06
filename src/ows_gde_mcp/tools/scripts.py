@@ -41,7 +41,6 @@ from typing import Any
 from ows_gde_mcp.client import OwsApiError
 from ows_gde_mcp.tools.live import _studio_get, _studio_post
 
-
 _SERVICE_SCRIPT_PATH = "/adc-studio-service/web/rest/v1/app/service/script/query-all"
 _PAGE_DETAIL_PATH = "/adc-studio-ui/web/rest/v1/page-core/page/{page_id}"
 _PAGE_SCRIPT_LIST_PATH = (
@@ -121,7 +120,9 @@ async def list_service_scripts(
     if script_name:
         body["script_name"] = script_name
     try:
-        res = await _studio_post(tenant, _SERVICE_SCRIPT_PATH, json=body, confirm=confirm)
+        res = await _studio_post(
+            tenant, _SERVICE_SCRIPT_PATH, json=body, confirm=confirm, read_only=True
+        )
     except OwsApiError as e:
         return {
             "error": {
@@ -189,7 +190,9 @@ async def get_service_script(
         "limit": 100,
     }
     try:
-        res = await _studio_post(tenant, _SERVICE_SCRIPT_PATH, json=body, confirm=confirm)
+        res = await _studio_post(
+            tenant, _SERVICE_SCRIPT_PATH, json=body, confirm=confirm, read_only=True
+        )
     except OwsApiError as e:
         return {
             "error": {
@@ -470,9 +473,161 @@ async def list_page_scripts(
     }
 
 
+async def create_service_script(
+    tenant: str,
+    project_name: str,
+    module_name: str,
+    script_name: str,
+    content: str,
+    *,
+    script_type: str = "RunScript",
+    language: str = "JavaScript",
+    interp_name: str = "Rhino2",
+    version: str = "1.0",
+    confirm: bool = False,
+) -> dict[str, Any]:
+    """Create a new service script (RunScript, ScriptLib, etc.) in GDE Studio.
+
+    Args:
+        tenant: "prod" or "testbed".
+        project_name / module_name: where to create the script.
+        script_name: name of the new script (e.g. `runScript_calculate`).
+        content: JavaScript body content.
+        script_type: type of the script (default: `"RunScript"`).
+        language: programming language (default: `"JavaScript"`).
+        interp_name: runtime engine interpreter (default: `"Rhino2"`).
+        version: metadata version string (default: `"1.0"`).
+        confirm: required True to allow writes against production.
+    """
+    body: dict[str, Any] = {
+        "project_name": project_name,
+        "module_name": module_name,
+        "script_name": script_name,
+        "script_type": script_type,
+        "language": language,
+        "interp_name": interp_name,
+        "version": version,
+        "content": content,
+        "active": True,
+    }
+    try:
+        res = await _studio_post(
+            tenant,
+            "/adc-studio-service/web/rest/v1/app/service/script/create",
+            json=body,
+            confirm=confirm,
+        )
+        return {"status": "success", "id": res}
+    except OwsApiError as e:
+        return {
+            "error": {
+                "status": e.status,
+                "code": e.code,
+                "message": e.message,
+                "path": e.path,
+            }
+        }
+
+
+async def update_service_script(
+    tenant: str,
+    project_name: str,
+    module_name: str,
+    script_name: str,
+    content: str,
+    *,
+    script_type: str = "RunScript",
+    confirm: bool = False,
+) -> dict[str, Any]:
+    """Update (save) the content of an existing service/module script in GDE Studio.
+
+    Fetches the existing script record metadata dynamically to obtain ID, version,
+    and interpreter settings, replaces the code body, and POSTs to `/update`.
+
+    Args:
+        tenant: "prod" or "testbed".
+        project_name / module_name: where the script lives.
+        script_name: exact script name.
+        content: new JavaScript body content to save.
+        script_type: script type filter (default: `"RunScript"`).
+        confirm: required True to allow writes against production.
+    """
+    query_body: dict[str, Any] = {
+        "project_name": project_name,
+        "module_name": module_name,
+        "script_name": script_name,
+        "script_type": script_type,
+        "start": 0,
+        "limit": 10,
+    }
+    try:
+        res_list = await _studio_post(
+            tenant,
+            _SERVICE_SCRIPT_PATH,
+            json=query_body,
+            confirm=confirm,
+            read_only=True,
+        )
+    except OwsApiError as e:
+        return {
+            "error": {
+                "status": e.status,
+                "code": e.code,
+                "message": f"Failed to fetch script metadata: {e.message}",
+                "path": e.path,
+            }
+        }
+
+    rows = res_list.get("content") if isinstance(res_list, dict) else None
+    if not rows:
+        return {
+            "error": f"Script {script_name!r} not found in {project_name}/{module_name}"
+        }
+
+    target_row = None
+    for row in rows:
+        if isinstance(row, dict) and row.get("script_name") == script_name:
+            target_row = row
+            break
+
+    if not target_row:
+        return {
+            "error": f"Script {script_name!r} metadata lookup failed."
+        }
+
+    target_row["content"] = content
+
+    try:
+        await _studio_post(
+            tenant,
+            "/adc-studio-service/web/rest/v1/app/service/script/update",
+            json=target_row,
+            confirm=confirm,
+        )
+        return {
+            "status": "success",
+            "id": target_row.get("id"),
+            "script_name": script_name,
+            "version": target_row.get("version"),
+            "updater": target_row.get("updated_by"),
+            "update_time": target_row.get("updated_time"),
+        }
+    except OwsApiError as e:
+        return {
+            "error": {
+                "status": e.status,
+                "code": e.code,
+                "message": f"Failed to save script: {e.message}",
+                "path": e.path,
+            }
+        }
+
+
 __all__ = [
+    "create_service_script",
     "get_page_scripts",
     "get_service_script",
     "list_page_scripts",
     "list_service_scripts",
+    "update_service_script",
 ]

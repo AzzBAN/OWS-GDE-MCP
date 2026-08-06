@@ -290,7 +290,7 @@ async def _fetch_pages_with_content(
     Cost: 1 list call + N detail calls (N = pages in module). The
     `concurrency` cap keeps OWS from rate-limiting; 8 is comfortable.
     """
-    from ows_gde_mcp.tools.live import get_page_detail, list_pages
+    from ows_gde_mcp.tools.pages import get_page_detail, list_pages
 
     summaries: list[dict[str, Any]] = []
     page = 0
@@ -484,7 +484,8 @@ async def _list_artifact_names(
     tenant: str, project: str, module: str, artifact_type: str
 ) -> list[dict[str, Any]]:
     """Return `[{"name", ...}]` for every artifact of `artifact_type` in (project, module)."""
-    from ows_gde_mcp.tools.live import list_models, list_pages, list_scripts, list_services
+    from ows_gde_mcp.tools.live import list_models, list_scripts, list_services
+    from ows_gde_mcp.tools.pages import list_pages
 
     if artifact_type == "service":
         out: list[dict[str, Any]] = []

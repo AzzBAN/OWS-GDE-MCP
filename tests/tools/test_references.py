@@ -179,8 +179,8 @@ def patched_live(monkeypatch: pytest.MonkeyPatch):
         }
 
     monkeypatch.setattr("ows_gde_mcp.tools.live.list_services", fake_list_services)
-    monkeypatch.setattr("ows_gde_mcp.tools.live.list_pages", fake_list_pages)
-    monkeypatch.setattr("ows_gde_mcp.tools.live.get_page_detail", fake_get_page_detail)
+    monkeypatch.setattr("ows_gde_mcp.tools.pages.list_pages", fake_list_pages)
+    monkeypatch.setattr("ows_gde_mcp.tools.pages.get_page_detail", fake_get_page_detail)
     monkeypatch.setattr("ows_gde_mcp.tools.live.list_triggers", fake_list_triggers)
     return live
 

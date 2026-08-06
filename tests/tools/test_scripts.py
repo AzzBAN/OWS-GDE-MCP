@@ -441,3 +441,65 @@ async def test_list_page_scripts_error_returns_error_dict(
     out = await _scripts.list_page_scripts("testbed", "p", "m")
     assert "error" in out
     assert out["error"]["code"] == "ADC.X"
+
+
+# ---------------- create_service_script & update_service_script ----------------
+
+
+async def test_create_service_script_permission_denied(fake_settings: Settings) -> None:
+    fake_settings.OWS_STUDIO_WRITE_ENABLED = False
+    with pytest.raises(PermissionError, match="Studio writes are disabled"):
+        await _scripts.create_service_script("prod", "p", "m", "s", "content", confirm=True)
+
+
+async def test_create_service_script_success(fake_settings: Settings, httpx_mock) -> None:
+    fake_settings.OWS_STUDIO_WRITE_ENABLED = True
+    httpx_mock.add_response(
+        url="https://testbed.example.com/adc-studio-service/web/rest/v1/app/service/script/create",
+        method="POST",
+        json=99999
+    )
+    res = await _scripts.create_service_script(
+        "testbed", "p", "m", "runScript_test", "return true;"
+    )
+    assert res == {"status": "success", "id": 99999}
+
+
+async def test_update_service_script_success(fake_settings: Settings, httpx_mock) -> None:
+    fake_settings.OWS_STUDIO_WRITE_ENABLED = True
+
+    # Mock query-all
+    httpx_mock.add_response(
+        url=_SCRIPT_QUERY_URL,
+        method="POST",
+        json={
+            "content": [
+                {
+                    "id": 12345,
+                    "project_name": "p",
+                    "module_name": "m",
+                    "script_name": "runScript_test",
+                    "script_type": "RunScript",
+                    "content": "old_content",
+                    "language": "JavaScript",
+                    "interp_name": "Rhino2",
+                    "version": "1.0",
+                }
+            ]
+        }
+    )
+
+    # Mock update
+    httpx_mock.add_response(
+        url="https://testbed.example.com/adc-studio-service/web/rest/v1/app/service/script/update",
+        method="POST",
+        json=True
+    )
+
+    res = await _scripts.update_service_script(
+        "testbed", "p", "m", "runScript_test", "new_content"
+    )
+    assert res["status"] == "success"
+    assert res["id"] == 12345
+    assert res["script_name"] == "runScript_test"
+

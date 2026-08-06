@@ -310,12 +310,12 @@ class OwsClient:
         # paths plus any `..` traversal before issuing the request.
         _validate_path(path)
 
-        # Prod write-gate — enforced at the client layer so every tool that
-        # routes through here is covered, not just `call_ows_api`.
-        # `read_only=True` opts out for POST endpoints that the server
-        # contract guarantees can't mutate (e.g. queryByTql).
+        # Write safety gates — different policies for Studio elements and runtime models/services
         if method.upper() != "GET" and not read_only:
-            self._settings.assert_prod_write_allowed(self._tenant, confirm=confirm)
+            if self._surface == Surface.STUDIO:
+                self._settings.assert_studio_write_allowed(self._tenant, confirm=confirm)
+            else:
+                self._settings.assert_prod_write_allowed(self._tenant, confirm=confirm)
 
         # CSRF bootstrap — POST/PUT/DELETE need `x-gde-csrf-token`. If the
         # tenant has no token yet (cold start, prod without
